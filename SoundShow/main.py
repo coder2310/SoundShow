@@ -1,4 +1,3 @@
-import constants
 import hashlib
 import os
 import time
@@ -9,12 +8,95 @@ import pymysql.cursors
 from flask import (Flask, redirect, render_template, request, send_file,
                    session, url_for)
 
+import querys
+import tables
+import useful
+import variables
+
 sound_show = Flask(__name__)
 sound_show.secret_key = "super secret key"
-db_conn = pymysql.connect(**constants.DB_CONN)
+sound_show_conn = pymysql.connect(**variables.DB_CONN)
+
+def login_required(function):
+    @wraps(function)
+    def dec(*args, **kwargs):
+        if not "username" in session:
+            return redirect(url_for("login"))
+        return function(*args, **kwargs)
+    return dec
+
+def retrieve_results(query, return_type = None, parameters = None):
+    with sound_show_conn.cursor( ) as cursor:
+        cursor.execute(query,parameters)
+    if return_type == "one":
+        return cursor.fetchone( )
+    if return_type == "many":
+        return cursor.fetchmany( )
+    if return_type == "all":
+        return cursor.fetchall( )
+    return None
+
 @sound_show.route("/")
-def start():
-    return "This is Sound Show"
+def index(): # This is the homepage for SoundShow
+    #this is to check if the user is logged in
+    # if they are logged in we can take them to their homepage
+    # where they can view their content, thinking of calling it "A stage"
+    # if "username" in session:
+    #     return redirect(url_for("user_home"))
+    return render_template("index.html")
+
+
+@sound_show.route("/login")
+def login():
+    return render_template("login.html",)
+@login_required
+@sound_show.route("/user_home")
+def user_home():
+   return render_template("user_home.html")
+
+@sound_show.route("/register", methods = ["GET"])
+def register():
+    return render_template("register.html")
+
+@sound_show.route("/login_auth", methods = ["POST"])
+def login_auth():
+    if request.form:
+        login_form = request.form
+        user_name = request.form["user_name"]
+        pass_word = useful.hash_password(login_form["pass_word"])
+        #pass_word = hashlib.sha256((login_form["pass_word"].encode("utf-8")).hexdigest())
+        exists = retrieve_results(querys.auth_login, "one",(user_name, pass_word))
+        if exists:
+            session["username"] = user_name
+            return redirect(url_for("user_home"))
+        error = "Username or password does not match our records"
+        return render_template("login.html", error = error)
+
+@sound_show.route("/reg_auth", methods = ["POST"])
+def reg_auth():
+    if request.form:
+        register_form = request.form
+        user_name = register_form["user_name"]
+        if retrieve_results(querys.user_exists, "one", (user_name)):
+            error = "User already Exists"
+            return render_template("register.html", error = error)
+        pass_word = useful.hash_password(register_form["pass_word"])
+        #pass_word = hashlib.sha256(((register_form["pass_word"]).encode("utf-8")).hexdigest())
+        first_name = register_form["first_name"]
+        last_name = register_form["last_name"]
+        user_uuid = str(uuid.uuid4())
+        joined = time.strftime('%Y-%m-%d %H:%M:%S')
+        fields = (first_name, last_name, user_name, pass_word,  user_uuid, joined)
+        #will make a password strength checker later
+        retrieve_results(querys.insert_user, "all", fields)
+        return redirect(url_for("login"))
+
+
+        
+        
+
+
 
 if __name__ == "__main__":
+    retrieve_results(tables.user)
     sound_show.run(debug = True)

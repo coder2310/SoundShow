@@ -1,0 +1,28 @@
+<html>
+    <head>
+        <title>Register</title>
+    </head>
+    <body>
+        <h1>Register</h1>
+        <div>
+            <form action="/reg_auth" method="post">
+                <input type="text" name="first_name" placeholder="first Name" required/>
+                <br/>
+                <input type="text" name="last_name" placeholder="last Name" required/>
+                <br/>
+                <input type="text" name="user_name" placeholder="username" required/>
+                <br/>
+                <input type="password" name="pass_word" placeholder="password" required/>
+                <br/>
+                <input type="submit" value="Register">
+            </form>
+        <div>
+            <a href= "/login">Login to SoundShow</a>
+            <br>
+            <a href= "/index">Welcome Page</a>
+        </div>
+        </div>
+        {% if error %}
+            {{ error }}
+        {% endif %}
+    </body>
