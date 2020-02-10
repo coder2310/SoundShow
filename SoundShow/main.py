@@ -61,7 +61,7 @@ def login_auth():
         login_form = request.form
         user_name = request.form["user_name"]
         pass_word = useful.hash_password(login_form["pass_word"])
-        exists = retrieve_results(querys.AUTH_LOGIN "one",(user_name, pass_word))
+        exists = retrieve_results(querys.AUTH_LOGIN, "one",(user_name, pass_word))
         if exists:
             session["username"] = user_name
             return redirect(url_for("user_home"))
