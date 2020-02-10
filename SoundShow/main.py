@@ -61,7 +61,7 @@ def login_auth():
         login_form = request.form
         user_name = request.form["user_name"]
         pass_word = useful.hash_password(login_form["pass_word"])
-        exists = retrieve_results(querys.auth_login, "one",(user_name, pass_word))
+        exists = retrieve_results(querys.AUTH_LOGIN "one",(user_name, pass_word))
         if exists:
             session["username"] = user_name
             return redirect(url_for("user_home"))
@@ -73,7 +73,7 @@ def reg_auth():
     if request.form:
         register_form = request.form
         user_name = register_form["user_name"]
-        if retrieve_results(querys.user_exists, "one", (user_name)):
+        if retrieve_results(querys.USER_EXISTS, "one", (user_name)):
             error = "User already Exists"
             return render_template("register.html", error = error)
         pass_word = useful.hash_password(register_form["pass_word"])
@@ -83,7 +83,7 @@ def reg_auth():
         joined = time.strftime('%Y-%m-%d %H:%M:%S')
         fields = (first_name, last_name, user_name, pass_word,  user_uuid, joined)
         #will make a password strength checker later
-        retrieve_results(querys.insert_user, "all", fields)
+        retrieve_results(querys.INSERT_USER, "all", fields)
         return redirect(url_for("login"))
 
 if __name__ == "__main__":
