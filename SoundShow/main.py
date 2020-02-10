@@ -40,7 +40,6 @@ def retrieve_results(query, return_type=None, parameters=None):
 
 @sound_show.route("/")
 def index():
-    q = "SELECT * FROM users;"
     # if "username" in session:
     #     return redirect(url_for("user_home")) # will implement this
     # once we add log out
