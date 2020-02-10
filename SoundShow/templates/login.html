@@ -1,27 +1,28 @@
-
 <html>
-    <head>
-        <title>Login</title>
-    </head>
-    <body>
-        <h1>Login</h1>
-        <div>
-            <form action="/login_auth" method="post">
-                <input type="text" name="user_name" placeholder="username" required/>
-                <br/>
-                <input type="password" name="pass_word" placeholder="password" required/>
-                <br/>
-                <input type="submit" value="Login">
-            </form>
-        <div>
-            <a href="/register">Don't have an account? Sign up here</a>
-            <br>
-            <a href= "/">Go back to home page</a>
-        </div>
-        </div>
-        {% if error %}
-            {{ error }}
-        {% endif %}
-
-    </body>
+  <head>
+    <title>Login</title>
+  </head>
+  <body>
+    <h1>Login</h1>
+    <div>
+      <form action="/login_auth" method="post">
+        <input type="text" name="user_name" placeholder="username" required />
+        <br />
+        <input
+          type="password"
+          name="pass_word"
+          placeholder="password"
+          required
+        />
+        <br />
+        <input type="submit" value="Login" />
+      </form>
+      <div>
+        <a href="/register">Don't have an account? Sign up here</a>
+        <br />
+        <a href="/">Go back to home page</a>
+      </div>
+    </div>
+    {% if error %} {{ error }} {% endif %}
+  </body>
 </html>
