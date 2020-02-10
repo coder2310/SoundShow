@@ -9,7 +9,7 @@ from flask import (Flask, redirect, render_template, request, send_file,
 
 import querys
 import tables
-import useful
+import utilities
 import variables
 
 sound_show = Flask(__name__)
@@ -67,7 +67,7 @@ def login_auth():
     if request.form:
         login_form = request.form
         user_name = request.form["user_name"]
-        pass_word = useful.hash_password(login_form["pass_word"])
+        pass_word = utilities.hash_password(login_form["pass_word"])
         exists = retrieve_results(
             querys.AUTH_LOGIN, "one", (user_name, pass_word))
         if exists:
@@ -86,7 +86,7 @@ def reg_auth():
         if retrieve_results(querys.USER_EXISTS, "one", (user_name)):
             error = "User already Exists"
             return render_template("register.html", error=error)
-        pass_word = useful.hash_password(register_form["pass_word"])
+        pass_word = utilities.hash_password(register_form["pass_word"])
         first_name = register_form["first_name"]
         last_name = register_form["last_name"]
         user_uuid = str(uuid.uuid4())
