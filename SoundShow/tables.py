@@ -1,5 +1,3 @@
-import pymysql.cursors
-import variables
 user = "CREATE TABLE IF NOT EXISTS user( \
         first_name VARCHAR(32) NOT NULL,\
         last_name VARCHAR(32) NOT NULL, \
@@ -10,8 +8,3 @@ user = "CREATE TABLE IF NOT EXISTS user( \
         content VARCHAR(50), \
         selected BOOLEAN,\
         PRIMARY KEY(first_name, uuid));"
-
-
-# table_create = pymysql.connect(**variables.DB_CONN)
-# with table_create.cursor() as curse:
-#         curse.execute(user)

@@ -1,4 +1,3 @@
-import hashlib
 import os
 import time
 import uuid
@@ -37,12 +36,10 @@ def retrieve_results(query, return_type = None, parameters = None):
     return None
 
 @sound_show.route("/")
-def index(): # This is the homepage for SoundShow
-    #this is to check if the user is logged in
-    # if they are logged in we can take them to their homepage
-    # where they can view their content, thinking of calling it "A stage"
+def index(): 
     # if "username" in session:
-    #     return redirect(url_for("user_home"))
+    #     return redirect(url_for("user_home")) # will implement this
+    # once we add log out
     return render_template("index.html")
 
 
@@ -64,7 +61,6 @@ def login_auth():
         login_form = request.form
         user_name = request.form["user_name"]
         pass_word = useful.hash_password(login_form["pass_word"])
-        #pass_word = hashlib.sha256((login_form["pass_word"].encode("utf-8")).hexdigest())
         exists = retrieve_results(querys.auth_login, "one",(user_name, pass_word))
         if exists:
             session["username"] = user_name
@@ -81,7 +77,6 @@ def reg_auth():
             error = "User already Exists"
             return render_template("register.html", error = error)
         pass_word = useful.hash_password(register_form["pass_word"])
-        #pass_word = hashlib.sha256(((register_form["pass_word"]).encode("utf-8")).hexdigest())
         first_name = register_form["first_name"]
         last_name = register_form["last_name"]
         user_uuid = str(uuid.uuid4())
@@ -90,12 +85,6 @@ def reg_auth():
         #will make a password strength checker later
         retrieve_results(querys.insert_user, "all", fields)
         return redirect(url_for("login"))
-
-
-        
-        
-
-
 
 if __name__ == "__main__":
     retrieve_results(tables.user)
