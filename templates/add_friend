@@ -1,0 +1,26 @@
+<html>
+<head>
+</head>
+<body>
+
+
+
+
+<form action="/Addfriend" method="POST">
+    Who would you like to add?
+<br>
+    <input type="text" name = "fg_name" placeholder="fg__name" required/></br>
+	<input type="text" name = "fname" placeholder="first_name" required/></br>
+	<input type="text" name = "lname" placeholder="last_name" required/></br>
+
+<input type="submit" value = Post />
+
+</form>
+
+<a href="/">Go back</a>
+<a href="/logout">Logout</a>
+
+</body>
+
+
+</html>

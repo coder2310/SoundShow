@@ -1,0 +1,129 @@
+<html>
+<head>
+</head>
+<body>
+<form action="/post" method="POST">
+	<h1>Welcome {{User_Name}}</h1>
+{#    <br> Would you like to post something? <br>#}
+{#    <input type="text" name = "item_name" placeholder="Item Name" required/>#}
+{#    <input type="text" name = "item_id" placeholder="Item Id" required/>#}
+{#    <input type="text" name = "fg_name" placeholder="Friend Group(if not public)"/>#}
+{#    <br>#}
+{##}
+{#    <br>#}
+{#    Public?#}
+{#    <input type="radio" name="Privacy" value="Yes"> Yes#}
+{#    <input type="radio" name="Privacy" value="No"> No <br>#}
+{#    <div></div>#}
+{##}
+{#    <input type="text" name = "file_path" placeholder="file_path" required/>#}
+{#     <br>#}
+{#	 </br>#}
+{#	<input type="submit" value = Post />#}
+{#</form>#}
+{##}
+{#<style type="text/css">#}
+{#	table, th, td{#}
+{#		border: 1px solid black;#}
+{#	}#}
+{#</style>#}
+{##}
+{#    These are all of your posts, as well as public posts!:#}
+{##}
+{#<table>#}
+{#	<th>Item ID</th>#}
+{#	<th>User_Name</th>#}
+{#    <th>Time Posted</th>#}
+{#	<th>File Path</th>#}
+{#    <th>contents</th>#}
+{##}
+        <div></div>
+         <div></div>
+Your preffed Contents :
+    <div></div>
+{% for line in posts %}
+	<tr>
+{#		<td>{{line.item_id}}</td>#}
+{#		<td>{{line.User_Name_post}}</td>#}
+{#        <td>{{line.post_time}}</td>#}
+{#        <td>{{line.file_Path}}</td>#}
+        <td>{{line.contents}}</td>
+
+        <div></div>
+         <div></div>
+{#     Do you want to see Relevant Data?#}
+{#     <a href="/more_datas">Relevant data</a>#}
+
+    <div></div>
+     <div></div>
+
+	</tr>
+{% endfor %}
+</table>
+<div></div>
+<div></div>
+{#<a href="/TowantTocomment">write a comment</a>#}
+{#<div></div>#}
+{#<div></div>#}
+{#<br>#}
+{##}
+{#<br>#}
+{#    Tag your friends?#}
+{#<br>#}
+{#    <form action="/createTag" method="POST">#}
+{#        <input type="text" name = "Tagged" placeholder="Email Here" required/><br>#}
+{#        <input type="text" name = "Item_id" placeholder="Item ID Here" required/>#}
+{#        <input type="submit" value = Post />#}
+{#    </form>#}
+{#<br>#}
+{##}
+{#    Friends that currently have you tagged!#}
+{#    <table>#}
+{#	<th>Item ID</th>#}
+{#	<th>First Name</th>#}
+{#    <th>Last Name</th>#}
+{##}
+{#{% for lines in Tags %}#}
+{#    <tr>#}
+{#		<td>{{lines.item_id}}</td>#}
+{#		<td>{{lines.fname}}</td>#}
+{#        <td>{{lines.lname}}</td>#}
+{#    </tr>#}
+{#    {% endfor %}#}
+{#</table>#}
+{##}
+{##}
+{#    <br>#}
+{#    Photos you are requested to be tagged in.#}
+{#    <table>#}
+{#	<th>Item ID</th>#}
+{#    <th>Email</th>#}
+{##}
+{#{% for lines in manageTags %}#}
+{#    <tr>#}
+{#		<td>{{lines.item_id}}</td>#}
+{#        <td>{{lines.email_tagger}}</td>#}
+{#    </tr>#}
+{#    {% endfor %}#}
+{#</table>#}
+{#    <br>#}
+{#<form action="/updateTag" method="POST">#}
+{#    Please enter the Item ID, email of person, and your preferred status, if you would like to update tag requests <br>#}
+{#    <input type="text" name = "itemID" placeholder="Item ID Please" required/>#}
+{#    <input type="text" name = "email" placeholder="Email of Person" required/> <br>#}
+{#<input type="radio" name="status" value="one"> Approve this tag request <br>#}
+{#<input type="radio" name="status" value="two"> Remove this tag request <br>#}
+{#<input type="radio" name="status" value="zero"> Do Nothing <br>#}
+{#    <input type="submit" value = Post />#}
+    </form>
+
+{#<a href="/select_blogger">Select a blogger</a>#}
+<br>
+<div></div>
+{#<a href="/wantToAddFriend">Add a friend</a>#}
+<a href="/logout">Logout</a>
+
+</body>
+
+
+</html>
