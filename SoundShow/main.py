@@ -64,7 +64,7 @@ def info():
 
 @login_required
 @sound_show.route("/user_home/<curr_uuid>")
-def user_home(curr_uuid, new_user=True):
+def user_home(curr_uuid):
     return render_template("user_home.html", user_name=session["username"])
 
 
