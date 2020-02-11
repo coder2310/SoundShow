@@ -122,5 +122,6 @@ if __name__ == "__main__":
     # will try to come with a query that removes the table if it already
     # exists. Insertign all information from it, into thew new table
     # this is just so that if we make changes to the colomuns or constraints
+    retrieve_results(querys.DROP_TABLE.format("user"))
     retrieve_results(tables.user)
     sound_show.run(debug=True)

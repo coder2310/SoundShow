@@ -29,7 +29,7 @@ def valid_password(pass_word):
     '''
     if len(pass_word) > 12 or len(pass_word) < 8:
         return False
-    #special_chars = {'!', '@', '#', '$', '&'}
+    special_chars = {'!', '@', '#', '$', '&'}
     upper = 0
     digit = 0
     special = 0
@@ -38,7 +38,7 @@ def valid_password(pass_word):
             upper += 1
         elif chars in string.digits:
             digit += 1
-        elif chars in string.punctuation:
+        elif chars in special_chars:
             special += 1
     if upper and digit and special:
         return True
