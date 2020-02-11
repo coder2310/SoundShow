@@ -1,28 +1,60 @@
 <html>
-    <head>
-        <title>Register</title>
-    </head>
-    <body>
-        <h1>Register</h1>
+  <head>
+    <title>Register</title>
+  </head>
+  <body>
+    <h1>Register</h1>
+
+    <div>
+      <form action="/reg_auth" method="post">
+        <input
+          type="text"
+          name="first_name"
+          placeholder="first Name"
+          required
+        />
+        <br />
+        <input type="text" name="last_name" placeholder="last Name" required />
+        <br />
         <div>
-            <form action="/reg_auth" method="post">
-                <input type="text" name="first_name" placeholder="first Name" required/>
-                <br/>
-                <input type="text" name="last_name" placeholder="last Name" required/>
-                <br/>
-                <input type="text" name="user_name" placeholder="username" required/>
-                <br/>
-                <input type="password" name="pass_word" placeholder="password" required/>
-                <br/>
-                <input type="submit" value="Register">
-            </form>
+          <h2>A good username should have the following:</h2>
+          <div>
+            <ul>
+              <li>At least 6 characters</li>
+              <li>At least one number</li>
+              <li>At least one character</li>
+              <li>No Special characters</li>
+            </ul>
+          </div>
+        </div>
+        <input type="text" name="user_name" placeholder="username" required />
+        <br />
         <div>
-            <a href= "/login">Login to SoundShow</a>
-            <br>
-            <a href= "/">Welcome Page</a>
+          <h2>Password Requirments</h2>
+          <div>
+            <ul>
+              <li>Between 8 and 12 characters</li>
+              <li>At least one number</li>
+              <li>At least one uppercase character</li>
+              <li>at least one special character in the set ! @ # $ &</li>
+            </ul>
+          </div>
         </div>
-        </div>
-        {% if error %}
-            {{ error }}
-        {% endif %}
-    </body>
+        <input
+          type="password"
+          name="pass_word"
+          placeholder="password"
+          required
+        />
+        <br />
+        <input type="submit" value="Register" />
+      </form>
+      <div>
+        <a href="/login">Login to SoundShow</a>
+        <br />
+        <a href="/">Welcome Page</a>
+      </div>
+    </div>
+    {% if error %} {{ error }} {% endif %}
+  </body>
+</html>
