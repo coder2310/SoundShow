@@ -35,6 +35,35 @@ def execute_query(query, return_type=None, parameters=None):
         return cursor.fetchall()
     return None
 
+
+def insert_category(category_name):
+    execute_query(querys.INSERT_CATEGORY, None, (category_name))
+
+
+def insert_all_categories():
+    for cats in variables.CATEGORIES:
+        insert_category(cats)
+
+@login_required
+def jsonify_curr_user():
+    pass # this will be used to render a users profile
+
+def run_sound_show():  # made it function so when we fix up our file structure
+    # its easier to uses
+    # execute_query(querys.DROP_TABLE.format("user_interests"))
+    # execute_query(querys.DROP_TABLE.format("category"))
+    execute_query(tables.user)
+    execute_query(tables.category)
+    execute_query(tables.content)
+    execute_query(tables.user_interests)
+    try:
+        insert_all_categories()
+    except:
+        pass #I assume any error raised would be caused by the fact that the category
+    # is already in the database
+    sound_show.run(debug=True)
+
+
 @sound_show.route("/")
 def index():
     # if "username" in session:
@@ -114,15 +143,12 @@ def reg_auth():
         session["username"] = user_name
         return redirect(url_for("new_user", curr_uuid=user_uuid, name=first_name))
 
-def run_sound_show(): # made it function so when we fix up our file structure
-    #its easier to uses
-    #execute_query(querys.DROP_TABLE.format("user_interests"))
-    #execute_query(querys.DROP_TABLE.format("category"))
-    execute_query(tables.user)
-    execute_query(tables.category)
-    execute_query(tables.content)
-    execute_query(tables.user_interests)
-    sound_show.run(debug=True)
+@login_required
+@sound_show.route("/profile<curr_uuid>")
+def profile(curr_uuid):
+    return render_template("profile.html", curr_uuid = curr_uuid, user_name =session["username"],
+    data = jsonify_curr_user())
+
 
 
 if __name__ == "__main__":

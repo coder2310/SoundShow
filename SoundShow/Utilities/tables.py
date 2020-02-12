@@ -26,8 +26,3 @@ user_interests = "CREATE TABLE IF NOT EXISTS user_interests(\
                   PRIMARY KEY(user_name, uuid, content_name), \
                   FOREIGN KEY (user_name, uuid) REFERENCES user(user_name, uuid), \
                   FOREIGN KEY (content_name) REFERENCES content(content_name) );"
-
-
-
-
-           

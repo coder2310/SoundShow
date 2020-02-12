@@ -8,6 +8,7 @@ import string
 def hash_password(password):
     return hashlib.sha256(password.encode("utf-8")).hexdigest()
 
+
 def valid_username(user_name):
     '''Each username should be at least 6 characters long, will convert
     all to lowercase when entered, should also have at least number
@@ -20,7 +21,8 @@ def valid_username(user_name):
             return False
         if char.isdigit():
             digit_count += 1
-    return digit_count # If its anything other then 0 it will be true, if 0 its false
+    return digit_count  # If its anything other then 0 it will be true, if 0 its false
+
 
 def valid_password(pass_word):
     '''Passwords should be between 8 and 12 characters long.
@@ -43,4 +45,3 @@ def valid_password(pass_word):
     if upper and digit and special:
         return True
     return False
-
