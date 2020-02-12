@@ -7,10 +7,8 @@ import pymysql.cursors
 from flask import (Flask, redirect, render_template, request, send_file,
                    session, url_for)
 
-import querys
-import tables
-import utilities
-import variables
+
+from Utilities import querys, tables, utilities, variables
 
 sound_show = Flask(__name__)
 sound_show.secret_key = "super secret key"
@@ -26,7 +24,7 @@ def login_required(function):
     return dec
 
 
-def retrieve_results(query, return_type=None, parameters=None):
+def execute_query(query, return_type=None, parameters=None):
     with sound_show_conn.cursor() as cursor:
         cursor.execute(query, parameters)
     if return_type == "one":
@@ -36,7 +34,6 @@ def retrieve_results(query, return_type=None, parameters=None):
     if return_type == "all":
         return cursor.fetchall()
     return None
-
 
 @sound_show.route("/")
 def index():
@@ -79,11 +76,11 @@ def login_auth():
         login_form = request.form
         user_name = request.form["user_name"]
         pass_word = utilities.hash_password(login_form["pass_word"])
-        exists = retrieve_results(
+        exists = execute_query(
             querys.AUTH_LOGIN, "one", (user_name, pass_word))
         if exists:
             session["username"] = user_name
-            results = retrieve_results(querys.GET_UUID, "one", user_name)
+            results = execute_query(querys.GET_UUID, "one", user_name)
             return redirect(url_for("user_home", curr_uuid=results["uuid"]))
         error = "Username or password does not match our records"
         return render_template("login.html", error=error)
@@ -99,7 +96,7 @@ def reg_auth():
         if not utilities.valid_username(user_name):
             error = "Username does not satisify requirments"
             return render_template("register.html", error=error)
-        if retrieve_results(querys.USER_EXISTS, "one", (user_name)):
+        if execute_query(querys.USER_EXISTS, "one", (user_name)):
             error = "User already Exists"
             return render_template("register.html", error=error)
         if not utilities.valid_password(pass_word):
@@ -113,15 +110,23 @@ def reg_auth():
         fields = (first_name, last_name, user_name,
                   pass_word,  user_uuid, joined)
         # will make a password strength checker later
-        retrieve_results(querys.INSERT_USER, None, fields)
+        execute_query(querys.INSERT_USER, None, fields)
         session["username"] = user_name
         return redirect(url_for("new_user", curr_uuid=user_uuid, name=first_name))
+
+def run_sound_show(): # made it function so when we fix up our file structure
+    #its easier to uses
+    #execute_query(querys.DROP_TABLE.format("user_interests"))
+    #execute_query(querys.DROP_TABLE.format("category"))
+    execute_query(tables.user)
+    execute_query(tables.category)
+    execute_query(tables.content)
+    execute_query(tables.user_interests)
+    sound_show.run(debug=True)
 
 
 if __name__ == "__main__":
     # will try to come with a query that removes the table if it already
     # exists. Insertign all information from it, into thew new table
     # this is just so that if we make changes to the colomuns or constraints
-    retrieve_results(querys.DROP_TABLE.format("user"))
-    retrieve_results(tables.user)
-    sound_show.run(debug=True)
+    run_sound_show()
