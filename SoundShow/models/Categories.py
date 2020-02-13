@@ -13,10 +13,12 @@ class Category:
         self.image_file = cat_name + ".jpg"
         self.cat_name = cat_name
         self.image_path = self.abs_file_path + self.image_file
+    def return_path(self):
+        return self.image_path
     def jsonify(self):
         return {
             "cat_name" : self.cat_name,
-            "path" : self.image_path
+            "path" : "../img/" + self.image_file
         }
 
 if __name__ == "__main__":

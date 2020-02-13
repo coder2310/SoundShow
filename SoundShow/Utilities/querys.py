@@ -8,4 +8,6 @@ GET_INFO_USING_UUID = "SELECT * FROM user WHERE UUID = %s;"
 DROP_TABLE = "DROP TABLE {};"  # have to use DROP_TABLE.format(table_name)
 # have to use TRUNCATE_TABLE.format(table_name)
 TRUNCATE_TABLE = "TRUNCATE TABLE {};"
-INSERT_CATEGORY = "INSERT INTO category (category_name) VALUES (%s);"
+INSERT_CATEGORY = "INSERT INTO category (category_name, img_path) VALUES (%s,%s);"
+DROP_DATABASE = "DROP DATABASE {};"
+

@@ -2,14 +2,14 @@ import os
 import time
 import uuid
 from functools import wraps
-
+from PIL import Image
 import pymysql.cursors
 from flask import (Flask, redirect, render_template, request, send_file,
                    session, url_for)
 
 
 from Utilities import querys, tables, utilities, variables
-
+from models import Categories
 sound_show = Flask(__name__)
 sound_show.secret_key = "super secret key"
 sound_show_conn = pymysql.connect(**variables.DB_CONN)
@@ -36,31 +36,36 @@ def execute_query(query, return_type=None, parameters=None):
     return None
 
 
-def insert_category(category_name):
-    execute_query(querys.INSERT_CATEGORY, None, (category_name))
-
-
-def insert_all_categories():
+def populate_category_table():
+    # will start by reading in the list of category tables from the
+    # variables.category. Since the name of the category is the same
+    # as the file name we can just pass that in and the extension will be 
+    # passed in automatically
+    # this function will accomplish two things, populate the table and generate a list of
+    # objects that will be passed to the front end
+    # to display them to the user. Will explain to thomas
+    lst_categories = [] # this is the list of json objects that will be passed into the front end
+    # will now begin to loop over the variables.CATEGORIES
     for cats in variables.CATEGORIES:
-        insert_category(cats)
+        # Will get the path by creating a category object
+        new_cat = Categories.Category(cats)
+        # append the json data into the lst
 
+        lst_categories.append(new_cat.jsonify())
+        try:
+            execute_query(querys.INSERT_CATEGORY, None, (cats, new_cat.return_path()[:50]))
+        except:
+            pass
+        
+    #return redirect(url_for("img", data = lst_categories))
+    return lst_categories
 @login_required
 def jsonify_curr_user():
     pass # this will be used to render a users profile
 
 def run_sound_show():  # made it function so when we fix up our file structure
-    # its easier to uses
-    # execute_query(querys.DROP_TABLE.format("user_interests"))
-    # execute_query(querys.DROP_TABLE.format("category"))
-    execute_query(tables.user)
-    execute_query(tables.category)
-    execute_query(tables.content)
-    execute_query(tables.user_interests)
-    try:
-        insert_all_categories()
-    except:
-        pass #I assume any error raised would be caused by the fact that the category
-    # is already in the database
+    
+    populate_category_table()
     sound_show.run(debug=True)
 
 
@@ -98,6 +103,10 @@ def user_home(curr_uuid):
 def register():
     return render_template("register.html")
 
+@sound_show.route("/img/image_data")
+def img():
+    image_data =populate_category_table()
+    return render_template("img.html", image_data = image_data)
 
 @sound_show.route("/login_auth", methods=["POST"])
 def login_auth():
@@ -155,4 +164,10 @@ if __name__ == "__main__":
     # will try to come with a query that removes the table if it already
     # exists. Insertign all information from it, into thew new table
     # this is just so that if we make changes to the colomuns or constraints
-    run_sound_show()
+    #run_sound_show()
+    for elem in populate_category_table():
+        try:
+            im = Image.open("img/"+elem["cat_name"]+".jpg")
+            im.show()
+        except:
+            pass

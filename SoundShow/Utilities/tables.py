@@ -9,6 +9,7 @@ user = "CREATE TABLE IF NOT EXISTS user( \
 
 category = "CREATE TABLE IF NOT EXISTS category(\
         category_name VARCHAR(32) NOT NULL, \
+        img_path VARCHAR(50) NOT NULL, \
         num_intersted BIGINT DEFAULT 0, \
         PRIMARY KEY (category_name) );"
 
