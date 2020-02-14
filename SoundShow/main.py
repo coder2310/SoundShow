@@ -65,7 +65,7 @@ def jsonify_curr_user():
 
 def run_sound_show():  # made it function so when we fix up our file structure
     
-    populate_category_table()
+    #populate_category_table()
     sound_show.run(debug=True)
 
 
@@ -164,10 +164,6 @@ if __name__ == "__main__":
     # will try to come with a query that removes the table if it already
     # exists. Insertign all information from it, into thew new table
     # this is just so that if we make changes to the colomuns or constraints
-    #run_sound_show()
-    for elem in populate_category_table():
-        try:
-            im = Image.open("img/"+elem["cat_name"]+".jpg")
-            im.show()
-        except:
-            pass
+    run_sound_show()
+    #pass
+   
