@@ -18,12 +18,14 @@ content = "CREATE TABLE IF NOT exists content(\
            category_name VARCHAR(32) NOT NULL, \
            num_interested BIGINT NOT NULL, \
            PRIMARY KEY (content_name), \
-           FOREIGN KEY (category_name) REFERENCES category(category_name));"
+           FOREIGN KEY (category_name) REFERENCES category(category_name) \
+           ON DELETE CASCADE);"
 
 user_interests = "CREATE TABLE IF NOT EXISTS user_interests(\
                   user_name VARCHAR(20) NOT NULL, \
                   uuid VARCHAR(40) NOT NULL, \
-                  content_name VARCHAR(32) NOT NULL, \
-                  PRIMARY KEY(user_name, uuid, content_name), \
+                  category_name VARCHAR(32) NOT NULL, \
+                  PRIMARY KEY(user_name, uuid, category_name), \
                   FOREIGN KEY (user_name, uuid) REFERENCES user(user_name, uuid), \
-                  FOREIGN KEY (content_name) REFERENCES content(content_name) );"
+                  FOREIGN KEY (category_name) REFERENCES category(category_name) \
+                  ON DELETE CASCADE);"

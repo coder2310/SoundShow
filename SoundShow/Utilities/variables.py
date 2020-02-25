@@ -9,5 +9,5 @@ DB_CONN = {
     'cursorclass': pymysql.cursors.DictCursor,
     'autocommit': True
 }
-CATEGORIES = ["music", "food", "travel", "literature", "pets", "health", "video games",
-              "sports", "art", "technology", "movies", "religion"]
+CATEGORIES = sorted(["music", "food", "travel", "literature", "pets", "health", "video games",
+              "sports", "art", "technology", "movies", "religion"])

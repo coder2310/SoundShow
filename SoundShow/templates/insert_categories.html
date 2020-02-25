@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Welcome to SoundShow {{user_name}}</title>
+    <h1>Lets set up your profile {{name}}</h1>
+    <div>
+      <p>
+        SoundShow lets you pick your favorite categories
+        and present you with media content based on those categories.
+        Music, video, podcasts you name it, SoundShow will find it.
+        Lets get started on picking some categories, we'll ask you about more
+        specific ones later.
+      </p>
+        <div>
+          <form action= "/insert_new_user_categoires" method = "POST">
+            <ul>
+              {% for cats in categor %}
+                <input type ="checkbox" id = {{cats}} name = {{cats}}>
+                <label for = {{cats}}> {{cats}}</label>
+                <br>
+              {%endfor%}
+              <input type="submit" value= "Continue">
+          </form>
+          
+          </ul>
+        </div>
+      
+    </div>
+  </head>
+  <body></body>
+</html>

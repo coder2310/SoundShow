@@ -1,19 +1,24 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Welcome to SoundShow {{user_name}}</title>
-    <h1>Lets set up your profile {{name}}</h1>
-    <div>
-      <text>
-        SoundShow lets you pick your favorite categories
-        <br>
-        and present you with media content based on those categories.
-        <br>
-        Music, video, podcasts you name it, SoundShow will find it.
-      </text>
-    </div>
-  </head>
-  <body></body>
+<html>
+   <head>
+      <title>Welcome to SoundShow {{name}}</title>
+      <p>Lets begin by selecting your favorite categories</p>
+      <style>
+         .button {
+         background-color: #1c87c9;
+         border: none;
+         color: white;
+         padding: 20px 34px;
+         text-align: center;
+         text-decoration: none;
+         display: inline-block;
+         font-size: 20px;
+         margin: 4px 2px;
+         cursor: pointer;
+         }
+      </style>
+   </head>
+   <body>
+      <a href= "{{url_for('insert_categories', curr_uuid = curr_uuid, user_name = user_name, name = name, error = None)}}" class="button">Let's Go</a>
+   </body>
 </html>
