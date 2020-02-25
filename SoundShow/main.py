@@ -45,6 +45,7 @@ def jsonify_curr_user():
 # made it function so when we fix up our file structure
 def run_sound_show(clear_users=False):
     if clear_users:
+        execute_query("DELETE FROM user_interests;") # since its a forign key constrain
         execute_query("DELETE FROM user;")
     sound_show.run(debug=True)
 
@@ -55,6 +56,7 @@ def recreate_tables():
         execute_query(tables.category)
         execute_query(tables.content)
         execute_query(tables.user_interests)
+        execute_query(tables.num_interested_view)
     except:
         pass
 
@@ -119,9 +121,10 @@ def insert_new_user_categories():
             if selected:
                 execute_query(querys.ADD_INTEREST, None,
                               (session["username"], session["uuid"], cats))
+                execute_query(querys.UPDATE_CATEGORY_COUNT, None, (cats, cats))
             # if none are selected then we can just by default select the top 5 most
             # popular categories and add them to the table, will prolly use a VIEW for this
-
+                
         return redirect(url_for("add_content", curr_uuid=session["uuid"], name=session["username"]))
 
     # return redirect(url_for("new_user", user_name = session["username"], name = ))
@@ -203,4 +206,4 @@ if __name__ == "__main__":
     # this is just so that if we make changes to the colomuns or constraints
     # run_sound_show()
     recreate_tables()
-    run_sound_show()
+    run_sound_show(True)

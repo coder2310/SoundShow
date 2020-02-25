@@ -14,9 +14,11 @@ DROP_DATABASE = "DROP DATABASE {};"
 ADD_INTEREST = "INSERT INTO user_interests (user_name, uuid, category_name) \
                 VALUES (%s, %s, %s);"
 
-GET_NUMBER_INTERESTED_VIEW = "CREATE VIEW NumInterested AS \
-                  SELECT category_name, COUNT(user_name) AS \
-                  num_interested FROM user_interests WHERE \
-                  category_name IN (SELECT category_name FROM CATEGORY) \
-                  GROUP BY(category_name);"
-UPDATE_CATEGORY_COUNT = "" # This will be written later
+UPDATE_CATEGORY_COUNT = "UPDATE category\
+                        SET num_interested = \
+                        (SELECT num_interested FROM num_interested \
+                        WHERE category_name = %s) \
+                        WHERE category_name = %s;" 
+                        # Will try to come up with a better way to write this
+                        # Seems veryt redunadt and perhaps ineffeicient, but it
+                        # works for now

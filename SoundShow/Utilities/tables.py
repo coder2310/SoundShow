@@ -10,7 +10,7 @@ user = "CREATE TABLE IF NOT EXISTS user( \
 category = "CREATE TABLE IF NOT EXISTS category(\
         category_name VARCHAR(32) NOT NULL, \
         img_path VARCHAR(50) NOT NULL, \
-        num_intersted BIGINT DEFAULT 0, \
+        num_interested BIGINT DEFAULT 0, \
         PRIMARY KEY (category_name) );"
 
 content = "CREATE TABLE IF NOT exists content(\
@@ -29,3 +29,10 @@ user_interests = "CREATE TABLE IF NOT EXISTS user_interests(\
                   FOREIGN KEY (user_name, uuid) REFERENCES user(user_name, uuid), \
                   FOREIGN KEY (category_name) REFERENCES category(category_name) \
                   ON DELETE CASCADE);"
+
+
+num_interested_view = "CREATE VIEW Num_Interested AS \
+                  SELECT category_name, COUNT(user_name) AS \
+                  num_interested FROM user_interests WHERE \
+                  category_name IN (SELECT category_name FROM CATEGORY) \
+                  GROUP BY(category_name);"
