@@ -37,33 +37,6 @@ def execute_query(query, return_type=None, parameters=None):
     return None
 
 
-def populate_category_table():
-    # will start by reading in the list of category tables from the
-    # variables.category. Since the name of the category is the same
-    # as the file name we qcan just pass that in and the extension will be
-    # passed in automatically
-    # this function will accomplish two things, populate the table and generate a list of
-    # objects that will be passed to the front end
-    # to display them to the user. Will explain to thomas
-    # this is the list of json objects that will be passed into the front end
-    lst_categories = []
-    # will now begin to loop over the variables.CATEGORIES
-    for cats in variables.CATEGORIES:
-        # Will get the path by creating a category object
-        new_cat = Categories.Category(cats)
-        # append the json data into the lst
-
-        lst_categories.append(new_cat.jsonify())
-        try:
-            execute_query(querys.INSERT_CATEGORY, None,
-                          (cats, new_cat.return_path()[:50]))
-        except:
-            pass
-
-    # return redirect(url_for("img", data = lst_categories))
-    return lst_categories
-
-
 @login_required
 def jsonify_curr_user():
     pass  # this will be used to render a users profile
@@ -73,7 +46,6 @@ def jsonify_curr_user():
 def run_sound_show(clear_users=False):
     if clear_users:
         execute_query("DELETE FROM user;")
-    populate_category_table()
     sound_show.run(debug=True)
 
 
@@ -108,7 +80,6 @@ def new_user(curr_uuid, name):
     # that list will then be used to pass in to the new_user.html page
     # will focus on UX later and better routing later just want basic
     # functionality first
-
     return render_template("new_user.html", curr_uuid=curr_uuid,
                            user_name=session["username"], name=name)
 
@@ -144,11 +115,14 @@ def insert_new_user_categories():
             # Will create an add_interest query
             # user_interests table requires UUID, the user_name
             # and UUID is already stored in the current session
+            print(cats , "has been selected", selected, file = sys.stdout)
             if selected:
                 execute_query(querys.ADD_INTEREST, None,
                               (session["username"], session["uuid"], cats))
+            # if none are selected then we can just by default select the top 5 most
+            # popular categories and add them to the table, will prolly use a VIEW for this
 
-            return redirect(url_for("add_content", curr_uuid=session["uuid"], name=session["username"]))
+        return redirect(url_for("add_content", curr_uuid=session["uuid"], name=session["username"]))
 
     # return redirect(url_for("new_user", user_name = session["username"], name = ))
 
@@ -167,12 +141,6 @@ def user_home(curr_uuid):
 @sound_show.route("/register", methods=["GET"])
 def register():
     return render_template("register.html")
-
-
-@sound_show.route("/img/image_data")
-def img():
-    image_data = populate_category_table()
-    return render_template("img.html", image_data=image_data)
 
 
 @sound_show.route("/login_auth", methods=["POST"])

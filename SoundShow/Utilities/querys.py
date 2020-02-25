@@ -13,3 +13,10 @@ DROP_DATABASE = "DROP DATABASE {};"
 
 ADD_INTEREST = "INSERT INTO user_interests (user_name, uuid, category_name) \
                 VALUES (%s, %s, %s);"
+
+GET_NUMBER_INTERESTED_VIEW = "CREATE VIEW NumInterested AS \
+                  SELECT category_name, COUNT(user_name) AS \
+                  num_interested FROM user_interests WHERE \
+                  category_name IN (SELECT category_name FROM CATEGORY) \
+                  GROUP BY(category_name);"
+UPDATE_CATEGORY_COUNT = "" # This will be written later
