@@ -118,13 +118,15 @@ def new_user(curr_uuid, name):
 def insert_categories(curr_uuid, name):
     categor = variables.CATEGORIES
     return render_template("insert_categories.html", curr_uuid=curr_uuid,
-                           user_name=session["username"], name=name, categor = categor)
+                           user_name=session["username"], name=name, categor=categor)
+
 
 @login_required
 @sound_show.route("/add_content/<curr_uuid>/<name>")
 def add_content(curr_uuid, name):
-    return render_template("content.html", curr_uuid = curr_uuid, user_name = session["username"],
-    name = name)
+    return render_template("content.html", curr_uuid=curr_uuid, user_name=session["username"],
+                           name=name)
+
 
 @login_required
 @sound_show.route("/insert_new_user_categoires", methods=["POST"])
@@ -145,9 +147,9 @@ def insert_new_user_categories():
             if selected:
                 execute_query(querys.ADD_INTEREST, None,
                               (session["username"], session["uuid"], cats))
-        
-            return redirect(url_for("add_content",curr_uuid = session["uuid"], name = session["username"]))
-    
+
+            return redirect(url_for("add_content", curr_uuid=session["uuid"], name=session["username"]))
+
     # return redirect(url_for("new_user", user_name = session["username"], name = ))
 
 
