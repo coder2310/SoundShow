@@ -1,35 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Lets narrow it down a bit</title>
-</head>
-<body>
-    <p> Based on the categories you selected here are some
-    more specific content.</p>
+  </head>
+  <body>
+    <p>
+      Based on the categories you selected here are some more specific content.
+    </p>
     <div>
-        <form action="/add_user_content" method = "POST">
-        {% for elem in categories %}
-            {{elem}}
-                <div>
-                    {% for conts in categories[elem] %}
-                        <div>
-                            <input type="checkbox" id = {{conts}} name = {{conts}}>
-                            <label for = {{conts}}>{{conts}}</label>
-                            <br>
-                        </div>
-                    {% endfor %}
-
-                </div>
-                <br>
+      <form action="/add_user_content" method="POST">
+        {% for elem in categories %} {{elem}}
+        <div>
+          {% for conts in categories[elem] %} {% set conts_rep =
+          conts.replace('-', ' ') %}
+          <div>
+            <input type="checkbox" id="{{conts}}" name="{{conts}}" />
+            <label for="{{conts}}">{{conts_rep}}</label>
+            <br />
+          </div>
+          {% endfor %}
+        </div>
+        <br />
         {% endfor %}
-        <input type = "submit" value="Continue">
-        </form>
-            
-        <br>
-      
-    </div>  
-   
-</body>
+        <input type="submit" value="Continue" />
+      </form>
+      <br />
+    </div>
+  </body>
 </html>
