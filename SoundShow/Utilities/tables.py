@@ -24,10 +24,9 @@ content = "CREATE TABLE IF NOT exists content(\
 user_interests = "CREATE TABLE IF NOT EXISTS user_interests(\
                   user_name VARCHAR(20) NOT NULL, \
                   uuid VARCHAR(40) NOT NULL, \
-                  category_name VARCHAR(32) NOT NULL, \
-                  PRIMARY KEY(user_name, uuid, category_name), \
-                  FOREIGN KEY (user_name, uuid) REFERENCES user(user_name, uuid), \
-                  FOREIGN KEY (category_name) REFERENCES category(category_name) \
+                  content_name VARCHAR(32) NOT NULL, \
+                  PRIMARY KEY(user_name, uuid, content_name), \
+                  FOREIGN KEY (user_name, uuid) REFERENCES user(user_name, uuid) \
                   ON DELETE CASCADE);"
 
 

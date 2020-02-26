@@ -98,8 +98,20 @@ def insert_categories(curr_uuid, name):
 @sound_show.route("/add_content/<curr_uuid>/<name>")
 def add_content(curr_uuid, name):
     return render_template("content.html", curr_uuid=curr_uuid, user_name=session["username"],
-                           name=name)
+                           name=name, categories = retrieve_intial_content())
 
+@login_required
+def retrieve_intial_content():
+    # this function can be used for a few things
+    # when the user is going thru the registration proccess and its time 
+    # for them to select more specific content,
+    # session["categories"] is the session variable that holds the 
+    # categories a user is interested in, will use this to retrieve all the content
+    # related to that category, we can just use the file in varaibles
+    categories = {}
+    for cats in session["categories"]:
+        categories[cats] = variables.CONTENT[cats]
+    return categories
 
 @login_required
 @sound_show.route("/insert_new_user_categoires", methods=["POST"])
@@ -108,6 +120,7 @@ def insert_new_user_categories():
         # since the ids in the form are the same
         # as VARIABLES.categories i should be able to loop over those
         # will aslo print to console to see whats happeing
+        session["categories"] = []
         for cats in variables.CATEGORIES:
             # since we already have the name we can check to see if
             # its been selected, using the following line.
@@ -119,9 +132,10 @@ def insert_new_user_categories():
             # and UUID is already stored in the current session
             print(cats , "has been selected", selected, file = sys.stdout)
             if selected:
-                execute_query(querys.ADD_INTEREST, None,
-                              (session["username"], session["uuid"], cats))
-                execute_query(querys.UPDATE_CATEGORY_COUNT, None, (cats, cats))
+                # execute_query(querys.ADD_INTEREST, None,
+                #               (session["username"], session["uuid"], cats))
+                # execute_query(querys.UPDATE_CATEGORY_COUNT, None, (cats, cats))
+                session["categories"].append(cats)
             # if none are selected then we can just by default select the top 5 most
             # popular categories and add them to the table, will prolly use a VIEW for this
                 
@@ -191,6 +205,20 @@ def reg_auth():
         session["username"] = user_name
         session["uuid"] = user_uuid
         return redirect(url_for("new_user", curr_uuid=session["uuid"], name=first_name))
+@login_required
+@sound_show.route("/add_user_content", methods = ["POST"])
+def add_user_content():
+    if request.form:
+        for cats in session["categories"]:
+             for conts in variables.CONTENT[cats]:    
+                selected = bool(request.form.getlist(conts))
+                print(conts, "selected:", selected, file = sys.stdout)
+                if selected:
+                    print("Adding to database", file = sys.stdout)
+                    execute_query(querys.ADD_INTEREST, None, (session["username"], session["uuid"], conts))
+                    # now we have to add this to the database
+        return redirect(url_for("user_home", curr_uuid = session["uuid"]))
+    print("No form found", file = sys.stdout)
 
 
 @login_required
@@ -199,11 +227,17 @@ def profile(curr_uuid):
     return render_template("profile.html", curr_uuid=curr_uuid, user_name=session["username"],
                            data=jsonify_curr_user())
 
-
+def insert_content():
+    try:
+        for catergor in sorted(variables.CONTENT.keys()):
+            for conts in variables.CONTENT[catergor]:
+                execute_query(querys.ADD_CONTENT, None, (conts, catergor))
+    except:
+        pass
 if __name__ == "__main__":
     # will try to come with a query that removes the table if it already
     # exists. Insertign all information from it, into thew new table
     # this is just so that if we make changes to the colomuns or constraints
     # run_sound_show()
-    recreate_tables()
+    execute_query(tables.user_interests)
     run_sound_show(True)
