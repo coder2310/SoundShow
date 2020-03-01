@@ -45,7 +45,8 @@ def jsonify_curr_user():
 # made it function so when we fix up our file structure
 def run_sound_show(clear_users=False):
     if clear_users:
-        execute_query("DELETE FROM user_interests;") # since its a forign key constrain
+        # since its a forign key constrain
+        execute_query("DELETE FROM user_interests;")
         execute_query("DELETE FROM user;")
     sound_show.run(debug=True)
 
@@ -98,14 +99,16 @@ def insert_categories(curr_uuid, name):
 @sound_show.route("/add_content/<curr_uuid>/<name>")
 def add_content(curr_uuid, name):
     return render_template("content.html", curr_uuid=curr_uuid, user_name=session["username"],
-                           name=name, categories = retrieve_intial_content())
+                           name=name, categories=retrieve_intial_content())
+
 
 @login_required
 def retrieve_intial_content():
+    '''Retrieve content from sessiion varaible'''
     # this function can be used for a few things
-    # when the user is going thru the registration proccess and its time 
+    # when the user is going thru the registration proccess and its time
     # for them to select more specific content,
-    # session["categories"] is the session variable that holds the 
+    # session["categories"] is the session variable that holds the
     # categories a user is interested in, will use this to retrieve all the content
     # related to that category, we can just use the file in varaibles
     categories = {}
@@ -113,9 +116,13 @@ def retrieve_intial_content():
         categories[cats] = variables.CONTENT[cats]
     return categories
 
+
 @login_required
 @sound_show.route("/insert_new_user_categoires", methods=["POST"])
 def insert_new_user_categories():
+    '''This function will store the categories a user selected 
+    as a session varaible, no need to store this information in the data base, since we arent 
+    really doing much with this information'''
     if request.form:
         # since the ids in the form are the same
         # as VARIABLES.categories i should be able to loop over those
@@ -130,7 +137,7 @@ def insert_new_user_categories():
             # Will create an add_interest query
             # user_interests table requires UUID, the user_name
             # and UUID is already stored in the current session
-            print(cats , "has been selected", selected, file = sys.stdout)
+            print(cats, "has been selected", selected, file=sys.stdout)
             if selected:
                 # execute_query(querys.ADD_INTEREST, None,
                 #               (session["username"], session["uuid"], cats))
@@ -138,7 +145,7 @@ def insert_new_user_categories():
                 session["categories"].append(cats)
             # if none are selected then we can just by default select the top 5 most
             # popular categories and add them to the table, will prolly use a VIEW for this
-                
+
         return redirect(url_for("add_content", curr_uuid=session["uuid"], name=session["username"]))
 
     # return redirect(url_for("new_user", user_name = session["username"], name = ))
@@ -179,6 +186,7 @@ def login_auth():
 
 @sound_show.route("/reg_auth", methods=["POST"])
 def reg_auth():
+    '''Register user into system'''
     if request.form:
         register_form = request.form
         user_name = register_form["user_name"]
@@ -205,20 +213,21 @@ def reg_auth():
         session["username"] = user_name
         session["uuid"] = user_uuid
         return redirect(url_for("new_user", curr_uuid=session["uuid"], name=first_name))
+
+
 @login_required
-@sound_show.route("/add_user_content", methods = ["POST"])
+@sound_show.route("/add_user_content", methods=["POST"])
 def add_user_content():
+    """Add the content the user selected to the table"""
     if request.form:
         for cats in session["categories"]:
-             for conts in variables.CONTENT[cats]:    
+            for conts in variables.CONTENT[cats]:
                 selected = bool(request.form.getlist(conts))
-                print(conts, "selected:", selected, file = sys.stdout)
                 if selected:
-                    print("Adding to database", file = sys.stdout)
-                    execute_query(querys.ADD_INTEREST, None, (session["username"], session["uuid"], conts))
+                    execute_query(querys.ADD_INTEREST, None,
+                                  (session["username"], session["uuid"], conts))
                     # now we have to add this to the database
-        return redirect(url_for("user_home", curr_uuid = session["uuid"]))
-    print("No form found", file = sys.stdout)
+        return redirect(url_for("user_home", curr_uuid=session["uuid"]))
 
 
 @login_required
@@ -227,13 +236,18 @@ def profile(curr_uuid):
     return render_template("profile.html", curr_uuid=curr_uuid, user_name=session["username"],
                            data=jsonify_curr_user())
 
+
 def insert_content():
+    """Use if you want to reinsert content into content table"""
     try:
+        execute_query("DELETE FROM content")
         for catergor in sorted(variables.CONTENT.keys()):
             for conts in variables.CONTENT[catergor]:
                 execute_query(querys.ADD_CONTENT, None, (conts, catergor))
     except:
         pass
+
+
 if __name__ == "__main__":
     # will try to come with a query that removes the table if it already
     # exists. Insertign all information from it, into thew new table
