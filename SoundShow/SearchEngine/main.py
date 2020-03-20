@@ -27,5 +27,4 @@ def google_search(search_term, api_key, cse_id, **kwargs):
 
 res = google_search("coffee", API_KEY, CSE)
 
-with open("example.json", "w+") as ex:
-    json.dump(res, ex)
+print(res)
