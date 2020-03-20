@@ -15,16 +15,15 @@ CREDENTIALS = {
   "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/aks646%40soundshow.iam.gserviceaccount.com"
 }
 
-
-
-
-
 def google_search(search_term, api_key, cse_id, **kwargs):
     service = build("customsearch", "v1", developerKey=api_key)
     res = service.cse().list(q=search_term, cx=cse_id, **kwargs).execute()
     return res
 
+def search(term):
+  return google_search(term, API_KEY,CSE)
 
-res = google_search("coffee", API_KEY, CSE)
-
-print(res)
+#terms = ["nyc", "corona virus", "jordans 2020"]
+def search_list(lst):
+  for term in lst:
+    yield search(term)

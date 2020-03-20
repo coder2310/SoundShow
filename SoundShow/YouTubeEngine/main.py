@@ -13,7 +13,7 @@ youtube_object = build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION,
                                         developerKey = DEVELOPER_KEY) 
 
 
-def youtube_search_keyword(query, max_results): 
+def youtube_search_keyword(query, max_results = 50): 
     
     # calling the search.list method to 
     # retrieve youtube search results 
@@ -22,15 +22,15 @@ def youtube_search_keyword(query, max_results):
     
     # extracting the results from search response 
     results = search_keyword.get("items", []) 
-    print("Result Length:", type(results))
-    print("results:", type(results))
+    # print("Result Length:", type(results))
+    # print("results:", type(results))
     # empty list to store video, 
     # channel, playlist metadata 
     videos = [] 
     playlists = [] 
     channels = [] 
-    for result in results:
-        print("Result:", type(result))
+    # for result in results:
+    #     print("Result:", type(result))
     
     # extracting required info from each result object 
     for result in results: 
@@ -52,11 +52,19 @@ def youtube_search_keyword(query, max_results):
             channels.append("% s (% s) (% s) (% s)" % (result["snippet"]["title"], 
                                 result["id"]["channelId"], 
                                 result['snippet']['description'], 
-                                result['snippet']['thumbnails']['default']['url'])) 
+                                result['snippet']['thumbnails']['default']['url']))
+        return {
+            "results": results,
+            "videos" : videos,
+            "playlists": playlists,
+            "channels" : channels
+        }
+    
         
     
-if __name__ == "__main__": 
-    youtube_search_keyword('Sneakers', max_results = 10) 
+def search_list(lst):
+    for elem in lst:
+        yield youtube_search_keyword(elem)
     
 
 
