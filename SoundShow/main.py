@@ -3,7 +3,6 @@ import time
 import uuid
 import sys
 from functools import wraps
-from PIL import Image
 import pymysql.cursors
 from flask import (Flask, redirect, render_template, request, send_file,
                    session, url_for)
@@ -41,6 +40,8 @@ def execute_query(query, return_type=None, parameters=None):
 def jsonify_curr_user():
     pass  # this will be used to render a users profile
 
+def retrieve_top_categories(rows = 10):
+    return execute_query(querys.RETRIEVE_TOP_NUM, "all", rows)
 
 # made it function so when we fix up our file structure
 def run_sound_show(clear_users=False):
@@ -48,6 +49,7 @@ def run_sound_show(clear_users=False):
         # since its a forign key constrain
         execute_query("DELETE FROM user_interests;")
         execute_query("DELETE FROM user;")
+        execute_query(querys.RESET_CONTENT_COUNT)
     sound_show.run(debug=True)
 
 
@@ -137,7 +139,6 @@ def insert_new_user_categories():
             # Will create an add_interest query
             # user_interests table requires UUID, the user_name
             # and UUID is already stored in the current session
-            print(cats, "has been selected", selected, file=sys.stdout)
             if selected:
                 # execute_query(querys.ADD_INTEREST, None,
                 #               (session["username"], session["uuid"], cats))
@@ -159,7 +160,43 @@ def info():
 @login_required
 @sound_show.route("/user_home/<curr_uuid>")
 def user_home(curr_uuid):
-    return render_template("user_home.html", user_name=session["username"])
+    '''If the user hasnt selected any content yet, we automatticaly pick the top
+    10 and display it with out storing it in the users interests, other wise we display
+    everything the user is interested in.
+    This is where we would make calls to the APIs with all the data needed.'''
+    # Deciding on format of data
+    # we would return a list of objects
+    # google_search_results youtube_results and spotify_results
+    # each of those would also contain their own lists of objects
+    # For now basic format of all data should include
+    # Title or name
+    # and link to source
+    # Possibly thumb-nail or or sound clip based on the API used
+    # example
+    #{ google_api: [{"title": "title", "link": wwww.something.com},...], 
+    # youtube_api: [{"title": "title", "link": wwww.something.com},...],
+    # spotify_api : [{"title": "title", "link": wwww.something.com},...]}
+    # 
+    #     
+    # 
+    resources = {"google_search": None, "youtube_search": None, "spotify_search": None}
+    
+    users_interests = execute_query(querys.GET_USERS_INTERESTS, "all", session["username"])
+    if len(users_interests) == 0:
+        default = execute_query(querys.RETRIEVE_TOP_CONTENT, "all", 10)
+        # at this point we would do something like
+        # resoruce["google_search"] = get_search_results([list_of_content])
+        #resources["youtube_search"] = get_youtube_results([list_of_content])
+        # resoruces["spotify_search"] = get_spotify_results([list_of_content])
+        # the list of content would be extracted from the query results above
+        # this applies to weather or not the user picked content or not
+        # I want to display each object in a card like fashion
+        # with a star so they could mark it as their favorite
+        # and then we would need to create a favorite table 
+        # to store those resources.
+        return render_template("user_home.html", user_name=session["username"], data = default)
+
+    return render_template("user_home.html", user_name=session["username"], data = users_interests)
 
 
 @sound_show.route("/register", methods=["GET"])
@@ -169,6 +206,7 @@ def register():
 
 @sound_show.route("/login_auth", methods=["POST"])
 def login_auth():
+    '''Authenticate and validate user'''
     if request.form:
         login_form = request.form
         user_name = request.form["user_name"]
@@ -226,6 +264,7 @@ def add_user_content():
                 if selected:
                     execute_query(querys.ADD_INTEREST, None,
                                   (session["username"], session["uuid"], conts))
+                    execute_query(querys.INCREASE_CONTENT_COUNT, None, conts)
                     # now we have to add this to the database
         return redirect(url_for("user_home", curr_uuid=session["uuid"]))
 
@@ -233,6 +272,7 @@ def add_user_content():
 @login_required
 @sound_show.route("/profile/<curr_uuid>")
 def profile(curr_uuid):
+    '''Render the profile of the user with all the data needed'''
     return render_template("profile.html", curr_uuid=curr_uuid, user_name=session["username"],
                            data=jsonify_curr_user())
 
@@ -253,5 +293,10 @@ if __name__ == "__main__":
     # exists. Insertign all information from it, into thew new table
     # this is just so that if we make changes to the colomuns or constraints
     # run_sound_show()
-    execute_query(tables.user_interests)
-    run_sound_show(True)
+    try:
+        execute_query(querys.RESET_CATEGORY_COUNT)
+        execute_query(tables.user_interests)
+        execute_query(tables.sorted_categories_view)
+    except:
+        pass
+    run_sound_show()

@@ -20,5 +20,7 @@
    </head>
    <body>
       <a href= "{{url_for('insert_categories', curr_uuid = curr_uuid, user_name = user_name, name = name, error = None)}}" class="button">Let's Go</a>
+      <br>
+      <a href = "{{url_for('user_home', curr_uuid = curr_uuid)}}" class = "button">Pick later</a>
    </body>
 </html>
