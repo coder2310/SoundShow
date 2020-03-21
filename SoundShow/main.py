@@ -9,7 +9,6 @@ from flask import (Flask, redirect, render_template, request, send_file,
 
 
 from Utilities import querys, tables, utilities, variables
-from Models import Categories
 sound_show = Flask(__name__)
 sound_show.secret_key = "super secret key"
 sound_show_conn = pymysql.connect(**variables.DB_CONN)
@@ -40,10 +39,13 @@ def execute_query(query, return_type=None, parameters=None):
 def jsonify_curr_user():
     pass  # this will be used to render a users profile
 
-def retrieve_top_categories(rows = 10):
-    return execute_query(querys.RETRIEVE_TOP_NUM, "all", rows)
+
+def retrieve_top_categories(rows=10):
+    return execute_query(querys.RETRIEVE_TOP_CONTENT, "all", rows)
 
 # made it function so when we fix up our file structure
+
+
 def run_sound_show(clear_users=False):
     if clear_users:
         # since its a forign key constrain
@@ -128,25 +130,14 @@ def insert_new_user_categories():
     if request.form:
         # since the ids in the form are the same
         # as VARIABLES.categories i should be able to loop over those
-        # will aslo print to console to see whats happeing
         session["categories"] = []
         for cats in variables.CATEGORIES:
             # since we already have the name we can check to see if
             # its been selected, using the following line.
-            # If its been selected then we can go ahead and add it to
-            # a users_interest.
+            # If its been selected then we can go ahead and add it to the session variable
             selected = bool(request.form.getlist(cats))
-            # Will create an add_interest query
-            # user_interests table requires UUID, the user_name
-            # and UUID is already stored in the current session
             if selected:
-                # execute_query(querys.ADD_INTEREST, None,
-                #               (session["username"], session["uuid"], cats))
-                # execute_query(querys.UPDATE_CATEGORY_COUNT, None, (cats, cats))
                 session["categories"].append(cats)
-            # if none are selected then we can just by default select the top 5 most
-            # popular categories and add them to the table, will prolly use a VIEW for this
-
         return redirect(url_for("add_content", curr_uuid=session["uuid"], name=session["username"]))
 
     # return redirect(url_for("new_user", user_name = session["username"], name = ))
@@ -173,15 +164,17 @@ def user_home(curr_uuid):
     # and link to source
     # Possibly thumb-nail or or sound clip based on the API used
     # example
-    #{ google_api: [{"title": "title", "link": wwww.something.com},...], 
+    # { google_api: [{"title": "title", "link": wwww.something.com},...],
     # youtube_api: [{"title": "title", "link": wwww.something.com},...],
     # spotify_api : [{"title": "title", "link": wwww.something.com},...]}
-    # 
-    #     
-    # 
-    resources = {"google_search": None, "youtube_search": None, "spotify_search": None}
-    
-    users_interests = execute_query(querys.GET_USERS_INTERESTS, "all", session["username"])
+    #
+    #
+    #
+    resources = {"google_search": None,
+                 "youtube_search": None, "spotify_search": None}
+
+    users_interests = execute_query(
+        querys.GET_USERS_INTERESTS, "all", session["username"])
     if len(users_interests) == 0:
         default = execute_query(querys.RETRIEVE_TOP_CONTENT, "all", 10)
         # at this point we would do something like
@@ -192,11 +185,11 @@ def user_home(curr_uuid):
         # this applies to weather or not the user picked content or not
         # I want to display each object in a card like fashion
         # with a star so they could mark it as their favorite
-        # and then we would need to create a favorite table 
+        # and then we would need to create a favorite table
         # to store those resources.
-        return render_template("user_home.html", user_name=session["username"], data = default)
+        return render_template("user_home.html", user_name=session["username"], data=default)
 
-    return render_template("user_home.html", user_name=session["username"], data = users_interests)
+    return render_template("user_home.html", user_name=session["username"], data=users_interests)
 
 
 @sound_show.route("/register", methods=["GET"])
@@ -299,4 +292,4 @@ if __name__ == "__main__":
         execute_query(tables.sorted_categories_view)
     except:
         pass
-    run_sound_show()
+    run_sound_show(True)
