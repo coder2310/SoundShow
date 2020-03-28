@@ -17,6 +17,8 @@
           <form action= "/insert_new_user_categoires" method = "POST">
             <ul>
               {% for cats in categor %}
+              {% set pic = cats + ".jpg" %}
+                <img src = "{{url_for('static' ,filename = 'img/' + pic)}}" height = 100 width = 100>
                 <input type ="checkbox" id = {{cats}} name = {{cats}}>
                 <label for = {{cats}}> {{cats}}</label>
                 <br>
