@@ -31,10 +31,7 @@ def process_response(url):
             entry['source'] = results['source']['name']
             entry['title'] = results['title']
             if results['description']:
-                if len(results['description']) > 100:
-                    entry['description'] = results['description'][0:100] + '...'
-                else:
-                     entry['description'] = results['description']
+                entry['description'] = results['description'][0:100] + '...'
             entry['url'] = results['url']
             entry['img_url'] = results['urlToImage']
             data.append(entry)

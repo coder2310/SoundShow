@@ -1,5 +1,5 @@
 API_KEY = "AIzaSyA7sdo-57bTeW5Gl_M4KD078vDdpp8lkk4"
-
+import json
 
 from apiclient.discovery import build 
 
@@ -13,7 +13,7 @@ youtube_object = build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION,
                                         developerKey = DEVELOPER_KEY) 
 
 
-def youtube_search_keyword(query, max_results = 50): 
+def youtube_search_keyword(query, max_results = 30): 
     
     # calling the search.list method to 
     # retrieve youtube search results 
@@ -61,10 +61,42 @@ def youtube_search_keyword(query, max_results = 50):
         }
     
         
-    
-def search_list(lst):
-    for elem in lst:
-        yield youtube_search_keyword(elem)
+def extract_data(search_term):
+    #Object will be simialar that for news
+    # title
+    # desctiption 
+    # link
+    # defualt thumbnail
+    # chanel title
+    # Chananel link
+    data =  []
+    results = youtube_search_keyword(search_term)
+    for element in results["results"]:
+        entry = {
+            "title": None,
+            "description": None,
+            "link": None,
+            "image": None,
+            "channel": None,
+            "channel_link": "https://www.youtube.com/channel/{}"
+        }
+
+        entry["title"] = element["snippet"]["title"]
+        entry["description"] = element["snippet"]["description"][0:100]  
+        if element["id"]["kind"] == "youtube#video":
+            link = "https://www.youtube.com/watch?v={}".format(element["id"]["videoId"])
+            entry["link"] = link
+        entry["image"] = element["snippet"]["thumbnails"]["medium"]["url"]
+        entry["channel"] = element["snippet"]["channelTitle"]
+        entry["channel_link"] = entry["channel_link"].format(element["snippet"]["channelId"])
+        data.append(entry)
+    return data
+
+
+
+
+
+
     
 
 
