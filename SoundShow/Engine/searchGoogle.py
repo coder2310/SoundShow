@@ -59,7 +59,7 @@ def get_trending_category_topic(category, topic):
 
 def get_all_articles(topic):
     topic = topic.replace(' ', '+')
-    url = 'https://newsapi.org/v2/everything?q={}&apiKey=c960fb6217584e66b72bf22ad257a3db'.format(topic)
+    url = 'https://newsapi.org/v2/everything?q={}&apiKey={}'.format(topic, API_KEY)
     return process_response(url)
 
 def get_recent_articles(topic):
