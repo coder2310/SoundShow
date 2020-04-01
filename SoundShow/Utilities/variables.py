@@ -25,5 +25,4 @@ CONTENT =  {
     "movies" : ["2020 movie releases", "disney", "netflix", "marvel"],
     "religion" : ["islam", "christianity", "judiasm", "spritual", "theology"]
 }
-CATEGORIES = sorted(["music", "food", "travel", "literature", "pets", "health", "video games",
-              "sports", "art", "technology", "movies", "religion"])
+CATEGORIES = sorted(CONTENT.keys())

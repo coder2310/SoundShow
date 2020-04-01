@@ -6,6 +6,7 @@ import string
 
 
 def hash_password(password):
+    '''return sha256 hash of password'''
     return hashlib.sha256(password.encode("utf-8")).hexdigest()
 
 
