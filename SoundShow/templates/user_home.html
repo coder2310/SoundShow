@@ -6,6 +6,35 @@
     <title>Welcome back {{user_name}}</title>
   </head>
   <body>
-    {{data}}
+    <h1>Google Data</h1>
+    {%set google = data["google_search"]%} 
+    {% for items in google %}
+    <b>
+      <p>Source: {{items["source"]}}</p>
+    </b>
+    <br />
+    <b>
+      <p>Title: {{items["title"]}}</p>
+    </b>
+    <p>Description:{{items["description"]}}</p>
+    <a href={{ items["url"] }}>Link</a>
+    <br>
+    <img src= {{ items["img_url"] }} />
+    <br>
+    {%endfor%}
+    <h2>Youtube Data</h2>
+    {% set youtube = data["youtube_search"]%}
+      {% for items in youtube %}
+        <p>Title: {{items["title"]}}</p>
+        <br>
+        <p>Description:{{items["description"]}}</p>
+        <br>
+        <a href={{ items["url"] }}>Link</a>
+        <img src = {{ items["image"] }}>
+        <br>
+        <p>Channel: {{items["channel"]}}</p>
+        <br>
+        <a href = {{ items["channel_link"] }}>Channel Link</a>
+      {% endfor %}
   </body>
 </html>

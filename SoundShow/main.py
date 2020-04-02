@@ -9,6 +9,7 @@ from flask import (Flask, redirect, render_template, request, send_file,
 
 
 from Utilities import querys, tables, utilities, variables
+from Engine import searchGoogle, searchSpotify, searchYoutube
 sound_show = Flask(__name__)
 sound_show.secret_key = "super secret key"
 sound_show_conn = pymysql.connect(**variables.DB_CONN)
@@ -149,47 +150,65 @@ def info():
 
 
 @login_required
+def populate_home_page():
+    '''This is the algorithm for ppopulating a users home page with relevant content
+    We want all the objects for each part of the engine, to be in the list,
+    All the google results for their  interests will be in the gooogle_search key of the
+    resources dictionary, the youtube_search results will be in the youtube_search key
+    of the resoruces doictionary and same with spotify'''
+    resources = {"google_search": [],
+                 "youtube_search": [],
+                 "spotify_search": []}
+    users_interests = execute_query(  # this query returns a list of
+        # dictionaries, where the value of each dictionary
+        # is one of the users interests
+        querys.GET_USERS_INTERESTS, "all", session["username"])
+    interests = []  # this where we will populate those values
+    if len(users_interests) == 0:  # if the user had not selected any intial interests
+        # then we select the default_interests from the database,
+        # will probably adjust this so that it will only pick the top content
+        # related to their category, but there is also the possibility that
+        # they didnt pick any categories, but for now this works
+        default_interests = execute_query(
+            querys.RETRIEVE_TOP_CONTENT, "all", 10)
+        # default also is in the same format as users_interests
+        for obj in default_interests:
+            # for each of the dictionaries in the
+            interests.extend(obj.values())
+            # list of query results we call.values() whichh will return a list of
+            # values, and we extend that to the interests
+        for inter in interests:
+            # for each one of those interests we make calls to the Engine
+            # for example if we are interested in
+            # ["hip hop", "art shows", " political news"]
+            # for each of those items in the list we would
+            # make calls to each of the APIs each engine
+            # returns a list, we can then add to the appropriate
+            # key in the resources dictionary
+            google_results = searchGoogle.get_recent_articles(inter)
+            youtube_results = searchYoutube.extract_data(inter)
+            resources["google_search"] += google_results
+            resources["youtube_search"] += youtube_results
+        return resources
+    # we repeat the same steps if the user has selected initial interests
+    for obj in users_interests:
+        interests.extend(obj.values())
+    for inter in interests:
+        google_results = searchGoogle.get_recent_articles(inter)
+        youtube_results = searchYoutube.extract_data(inter)
+        resources["google_search"] += google_results
+        resources["youtube_search"] += youtube_results
+    return resources
+
+
+@login_required
 @sound_show.route("/user_home/<curr_uuid>")
 def user_home(curr_uuid):
     '''If the user hasnt selected any content yet, we automatticaly pick the top
     10 and display it with out storing it in the users interests, other wise we display
     everything the user is interested in.
     This is where we would make calls to the APIs with all the data needed.'''
-    # Deciding on format of data
-    # we would return a list of objects
-    # google_search_results youtube_results and spotify_results
-    # each of those would also contain their own lists of objects
-    # For now basic format of all data should include
-    # Title or name
-    # and link to source
-    # Possibly thumb-nail or or sound clip based on the API used
-    # example
-    # { google_api: [{"title": "title", "link": wwww.something.com},...],
-    # youtube_api: [{"title": "title", "link": wwww.something.com},...],
-    # spotify_api : [{"title": "title", "link": wwww.something.com},...]}
-    #
-    #
-    #
-    resources = {"google_search": None,
-                 "youtube_search": None, "spotify_search": None}
-
-    users_interests = execute_query(
-        querys.GET_USERS_INTERESTS, "all", session["username"])
-    if len(users_interests) == 0:
-        default = execute_query(querys.RETRIEVE_TOP_CONTENT, "all", 10)
-        # at this point we would do something like
-        # resoruce["google_search"] = get_search_results([list_of_content])
-        #resources["youtube_search"] = get_youtube_results([list_of_content])
-        # resoruces["spotify_search"] = get_spotify_results([list_of_content])
-        # the list of content would be extracted from the query results above
-        # this applies to weather or not the user picked content or not
-        # I want to display each object in a card like fashion
-        # with a star so they could mark it as their favorite
-        # and then we would need to create a favorite table
-        # to store those resources.
-        return render_template("user_home.html", user_name=session["username"], data=default)
-
-    return render_template("user_home.html", user_name=session["username"], data=users_interests)
+    return render_template("user_home.html", user_name=session["username"], data=populate_home_page())
 
 
 @sound_show.route("/register", methods=["GET"])
@@ -283,7 +302,7 @@ def insert_content():
 
 if __name__ == "__main__":
     # will try to come with a query that removes the table if it already
-    # exists. Insertign all information from it, into thew new table
+    # exists. Insertign all information from it, into the new table
     # this is just so that if we make changes to the colomuns or constraints
     # run_sound_show()
     try:
