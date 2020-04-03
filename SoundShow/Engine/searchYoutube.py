@@ -13,7 +13,7 @@ youtube_object = build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION,
                                         developerKey = DEVELOPER_KEY) 
 
 
-def youtube_search_keyword(query, max_results = 30): 
+def youtube_search_keyword(query, max_results = 10): 
     
     # calling the search.list method to 
     # retrieve youtube search results 

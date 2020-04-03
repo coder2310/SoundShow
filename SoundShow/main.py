@@ -4,12 +4,12 @@ import uuid
 import sys
 from functools import wraps
 import pymysql.cursors
+import ThreadEngines
 from flask import (Flask, redirect, render_template, request, send_file,
                    session, url_for)
 
 
 from Utilities import querys, tables, utilities, variables
-from Engine import searchGoogle, searchSpotify, searchYoutube
 sound_show = Flask(__name__)
 sound_show.secret_key = "super secret key"
 sound_show_conn = pymysql.connect(**variables.DB_CONN)
@@ -177,28 +177,29 @@ def populate_home_page():
             interests.extend(obj.values())
             # list of query results we call.values() whichh will return a list of
             # values, and we extend that to the interests
-        for inter in interests:
-            # for each one of those interests we make calls to the Engine
-            # for example if we are interested in
-            # ["hip hop", "art shows", " political news"]
-            # for each of those items in the list we would
-            # make calls to each of the APIs each engine
-            # returns a list, we can then add to the appropriate
-            # key in the resources dictionary
-            google_results = searchGoogle.get_recent_articles(inter)
-            youtube_results = searchYoutube.extract_data(inter)
-            resources["google_search"] += google_results
-            resources["youtube_search"] += youtube_results
+        return ThreadEngines.retrieve_content(interests)
+        # for inter in interests:
+        #     # for each one of those interests we make calls to the Engine
+        #     # for example if we are interested in
+        #     # ["hip hop", "art shows", " political news"]
+        #     # for each of those items in the list we would
+        #     # make calls to each of the APIs each engine
+        #     # returns a list, we can then add to the appropriate
+        #     # key in the resources dictionary
+        #     google_results = searchGoogle.get_recent_articles(inter)
+        #     #youtube_results = searchYoutube.extract_data(inter)
+        #     resources["google_search"] += google_results
+            #resources["youtube_search"] += youtube_results
         return resources
     # we repeat the same steps if the user has selected initial interests
     for obj in users_interests:
         interests.extend(obj.values())
-    for inter in interests:
-        google_results = searchGoogle.get_recent_articles(inter)
-        youtube_results = searchYoutube.extract_data(inter)
-        resources["google_search"] += google_results
-        resources["youtube_search"] += youtube_results
-    return resources
+    # for inter in interests:
+    #     google_results = searchGoogle.get_recent_articles(inter)
+    #     #youtube_results = searchYoutube.extract_data(inter)
+    #     resources["google_search"] += google_results
+    #     #resources["youtube_search"] += youtube_results
+    return ThreadEngines.retrieve_content(interests)
 
 
 @login_required

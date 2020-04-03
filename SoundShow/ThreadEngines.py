@@ -1,0 +1,82 @@
+from collections import deque
+from threading import Thread
+# import Engine.searchGoogle
+# import Engine.searchSpotify
+# import Engine.searchGoogle
+from Engine import searchGoogle, searchYoutube
+
+def g_interests(lst_interests):
+    # each API now has its own function
+    # this so we can return a list of dictionaries for each API
+    # but more importantly this will allow us to run each funnction
+    # concurrently since each API is seperate we can use threads to
+    # make calls to each one of them speeding up the how fast the user
+    # home a page loads
+    content = []
+    for elem in lst_interests:
+        content.extend(searchGoogle.get_recent_articles(elem))
+    return "google_search", content
+
+
+def experiment(lst_interests):
+    deq = deque()
+    thread_list = []
+    for elem in lst_interests:
+        new_thread = Thread(target=lambda q, elem: q.append(searchGoogle.get_recent_articles(elem)),
+                            args=(deq, elem))
+        new_thread.start()
+        thread_list.append(new_thread)
+    for thread in thread_list:
+        thread.join()
+
+    while len(deq) > 0:
+        res = deq.popleft()
+        print(res)
+
+
+def y_interests(lst_interests):
+    content = []
+    for elem in lst_interests:
+        content.extend(searchYoutube.extract_data(elem))
+    return "youtube_search", content
+
+
+def s_interests(lst_interests):
+    pass  # will write this function when spotify code is ready
+
+
+def retrieve_content(lst_interests):
+    # we this the functions that will create threads
+    # and return the dictionary
+    # will use a deque to store the results
+    resources = {
+        "google_search": [],
+        "youtube_search": []
+    }
+    # this is what we will use to store the thread results
+    deq = deque()
+    threads_list = []
+    gt = Thread(target=lambda q, lst_interests: q.append(
+        g_interests(lst_interests)), args=(deq, lst_interests))
+    # we create and start threed add it to the list and the results are then stored in the
+    # deque
+    gt.start()
+    threads_list.append(gt)
+    #yt = Thread(target=lambda q, lst_interests: q.append(y_interests(lst_interests)), args=(deq, lst_interests))
+    # yt.start()
+    # TODO add spotify thread when this done
+    # threads_list.append(yt)
+    for thread in threads_list:
+        thread.join()  # we join execution for each one
+    while len(deq) > 0:
+        # since threads are nondeterminitstic we dont know which one
+        # will finish first which is why we also will return the key that
+        # the function representes int the dictionary
+        # and we set it accordingly
+        result = deq.popleft()
+        resources[result[0]] = result[1]
+    return resources
+
+if __name__ == "__main__":
+    lst = ["hip hop", "new jordan sneakers", "2020 iphones"]
+    experiment(lst)
