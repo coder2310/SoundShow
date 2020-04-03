@@ -98,6 +98,3 @@ def retrieve_content(lst_interests):
         result = deq.popleft()
         resources[result[0]] = result[1]
     return resources
-
-if __name__ == "__main__":
-    lst = ["hip hop", "new jordan sneakers", "2020 iphones"]

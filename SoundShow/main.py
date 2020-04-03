@@ -58,11 +58,11 @@ def run_sound_show(clear_users=False):
 
 def recreate_tables():
     try:
-        execute_query(tables.user)
-        execute_query(tables.category)
-        execute_query(tables.content)
-        execute_query(tables.user_interests)
-        execute_query(tables.num_interested_view)
+        execute_query(tables.USER)
+        execute_query(tables.CATEGORY)
+        execute_query(tables.CONTENT)
+        execute_query(tables.USER_INTERESTS)
+        execute_query(tables.NUM_INTERESTED_VIEW)
     except:
         pass
 
@@ -307,9 +307,8 @@ if __name__ == "__main__":
     # this is just so that if we make changes to the colomuns or constraints
     # run_sound_show()
     try:
-        execute_query(querys.RESET_CATEGORY_COUNT)
-        execute_query(tables.user_interests)
-        execute_query(tables.sorted_categories_view)
+        execute_query(querys.RESET_CONTENT_COUNT)
+        execute_query(tables.USER_INTERESTS)
     except:
         pass
     run_sound_show(True)

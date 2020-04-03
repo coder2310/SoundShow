@@ -43,6 +43,4 @@ def valid_password(pass_word):
             digit += 1
         elif chars in special_chars:
             special += 1
-    if upper and digit and special:
-        return True
-    return False
+    return upper and digit and special
