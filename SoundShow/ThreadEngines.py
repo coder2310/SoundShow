@@ -18,8 +18,11 @@ def g_interests(lst_interests):
     return "google_search", content
 
 
-def experiment(lst_interests):
+# this version concurrently makes an api call for every user interest
+# might end up being faster, want to test same for youtube and spotify
+def g_interests_thread(lst_interests):
     deq = deque()
+    content = []
     thread_list = []
     for elem in lst_interests:
         new_thread = Thread(target=lambda q, elem: q.append(searchGoogle.get_recent_articles(elem)),
@@ -31,7 +34,25 @@ def experiment(lst_interests):
 
     while len(deq) > 0:
         res = deq.popleft()
-        print(res)
+        content.extend(res)
+    return "google_interests", content
+
+def y_interests_thread(lst_interests):
+    deq = deque()
+    content = []
+    thread_list = []
+    for elem in lst_interests:
+        new_thread = Thread(target=lambda q, elem: q.append(searchYoutube.extract_data(elem)),
+                            args=(deq, elem))
+        new_thread.start()
+        thread_list.append(new_thread)
+    for thread in thread_list:
+        thread.join()
+    while len(deq) > 0:
+        res = deq.popleft()
+        content.extend(res)
+    return "youtube_interests", content
+
 
 
 def y_interests(lst_interests):
@@ -44,7 +65,8 @@ def y_interests(lst_interests):
 def s_interests(lst_interests):
     pass  # will write this function when spotify code is ready
 
-
+def s_interests_thread(lst_interests):
+    pass
 def retrieve_content(lst_interests):
     # we this the functions that will create threads
     # and return the dictionary
@@ -79,4 +101,3 @@ def retrieve_content(lst_interests):
 
 if __name__ == "__main__":
     lst = ["hip hop", "new jordan sneakers", "2020 iphones"]
-    experiment(lst)
