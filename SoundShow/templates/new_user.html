@@ -1,26 +1,32 @@
 <!DOCTYPE html>
 <html>
-   <head>
-      <title>Welcome to SoundShow {{name}}</title>
-      <p>Lets begin by selecting your favorite categories</p>
-      <style>
-         .button {
-         background-color: #1c87c9;
-         border: none;
-         color: white;
-         padding: 20px 34px;
-         text-align: center;
-         text-decoration: none;
-         display: inline-block;
-         font-size: 20px;
-         margin: 4px 2px;
-         cursor: pointer;
-         }
-      </style>
-   </head>
-   <body>
-      <a href= "{{url_for('insert_categories', curr_uuid = curr_uuid, user_name = user_name, name = name, error = None)}}" class="button">Let's Go</a>
-      <br>
-      <a href = "{{url_for('user_home', curr_uuid = curr_uuid)}}" class = "button">Pick later</a>
-   </body>
+  <head>
+    <title>Welcome to SoundShow {{name}}</title>
+    <p>Lets begin by selecting your favorite categories</p>
+    <style>
+      .button {
+        background-color: #1c87c9;
+        border: none;
+        color: white;
+        padding: 20px 34px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 20px;
+        margin: 4px 2px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <a
+      href="{{url_for('insert_categories', curr_uuid = curr_uuid, user_name = user_name, name = name, error = None)}}"
+      class="button"
+      >Let's Go</a
+    >
+    <br />
+    <a href="{{url_for('user_home', curr_uuid = curr_uuid)}}" class="button"
+      >Pick later</a
+    >
+  </body>
 </html>

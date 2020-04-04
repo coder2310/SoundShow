@@ -153,14 +153,6 @@ def info():
 
 @login_required
 def populate_home_page():
-    '''This is the algorithm for ppopulating a users home page with relevant content
-    We want all the objects for each part of the engine, to be in the list,
-    All the google results for their  interests will be in the gooogle_search key of the
-    resources dictionary, the youtube_search results will be in the youtube_search key
-    of the resoruces doictionary and same with spotify'''
-    resources = {"google_search": [],
-                 "youtube_search": [],
-                 "spotify_search": []}
     users_interests = execute_query(  # this query returns a list of
         # dictionaries, where the value of each dictionary
         # is one of the users interests
@@ -179,28 +171,11 @@ def populate_home_page():
             interests.extend(obj.values())
             # list of query results we call.values() whichh will return a list of
             # values, and we extend that to the interests
-        return ThreadEngines.retrieve_content(interests)
-        # for inter in interests:
-        #     # for each one of those interests we make calls to the Engine
-        #     # for example if we are interested in
-        #     # ["hip hop", "art shows", " political news"]
-        #     # for each of those items in the list we would
-        #     # make calls to each of the APIs each engine
-        #     # returns a list, we can then add to the appropriate
-        #     # key in the resources dictionary
-        #     google_results = searchGoogle.get_recent_articles(inter)
-        #     #youtube_results = searchYoutube.extract_data(inter)
-        #     resources["google_search"] += google_results
-            #resources["youtube_search"] += youtube_results
-        return resources
+        return ThreadEngines.retrieve_content(interests)  
     # we repeat the same steps if the user has selected initial interests
     for obj in users_interests:
         interests.extend(obj.values())
-    # for inter in interests:
-    #     google_results = searchGoogle.get_recent_articles(inter)
-    #     #youtube_results = searchYoutube.extract_data(inter)
-    #     resources["google_search"] += google_results
-    #     #resources["youtube_search"] += youtube_results
+   
     return ThreadEngines.retrieve_content(interests)
 
 
