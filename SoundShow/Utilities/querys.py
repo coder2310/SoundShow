@@ -15,11 +15,12 @@ ADD_INTEREST = "INSERT INTO user_interests (user_name, uuid, content_name) \
                 VALUES (%s, %s, %s);"
 ADD_CONTENT = "INSERT INTO content (content_name, category_name, num_interested) \
                VALUES (%s, %s,0);"
+ADD_CATEGORY = "INSERT INTO category (category_name) VALUES (%s);"
 
 INCREASE_CONTENT_COUNT = "UPDATE content \
                         SET num_interested = num_interested + 1\
                         WHERE content_name = %s;"
-DECREASE_CONTENT_COUNT =  "UPDATE content \
+DECREASE_CONTENT_COUNT = "UPDATE content \
                         SET num_interested = num_interested - 1\
                         WHERE content_name = %s;"
 RESET_CONTENT_COUNT = "UPDATE content\

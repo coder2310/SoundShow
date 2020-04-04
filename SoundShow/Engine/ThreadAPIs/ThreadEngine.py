@@ -85,9 +85,9 @@ def retrieve_content(lst_interests):
     # deque
     gt.start()
     threads_list.append(gt)
-    #yt = Thread(target=lambda q, lst_interests: q.append(y_interests(lst_interests)), args=(deq, lst_interests))
+    # yt = Thread(target=lambda q, lst_interests: q.append(y_interests(lst_interests)), args=(deq, lst_interests))
     # yt.start()
-    # TODO add spotify thread when this done
+    # # TODO add spotify thread when this done
     # threads_list.append(yt)
     for thread in threads_list:
         thread.join()  # we join execution for each one

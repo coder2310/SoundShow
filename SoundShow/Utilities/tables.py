@@ -8,9 +8,8 @@ USER = "CREATE TABLE IF NOT EXISTS user( \
         PRIMARY KEY(user_name, uuid));"
 
 CATEGORY = "CREATE TABLE IF NOT EXISTS category(\
-        category_name VARCHAR(32) NOT NULL, \
-        img_path VARCHAR(50) NOT NULL, \
-        PRIMARY KEY (category_name) );"
+            category_name VARCHAR(32) NOT NULL, \
+            PRIMARY KEY (category_name) );"
 
 CONTENT = "CREATE TABLE IF NOT exists content(\
            content_name VARCHAR(32) NOT NULL, \
@@ -28,6 +27,13 @@ USER_INTERESTS = "CREATE TABLE IF NOT EXISTS user_interests(\
                   FOREIGN KEY (user_name, uuid) REFERENCES user(user_name, uuid) \
                   ON DELETE CASCADE);"
 
+USER_SEARCH_HISTORY =  "CREATE TABLE IF NOT EXISTS user_search_history(\
+                        user_name VARCHAR(20) NOT NULL, \
+                        search_term VARCHAR(40) NOT NULL, \
+                        searched_at TIMESTAMP NOT NULL,\
+                        PRIMARY KEY(user_name),\
+                        FOREIGN KEY(user_name) REFERENCES user(user_name) \
+                        ON DELETE CASCADE);"
 
 NUM_INTERESTED_VIEW = "CREATE VIEW Num_Interested AS \
                        SELECT category_name, SUM(num_interested) AS amount \

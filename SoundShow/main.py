@@ -4,7 +4,7 @@ import uuid
 import sys
 from functools import wraps
 import pymysql.cursors
-import ThreadEngines
+from Engine.ThreadAPIs import ThreadEngine
 from flask import (Flask, redirect, render_template, request, send_file,
                    session, url_for)
 
@@ -36,35 +36,54 @@ def execute_query(query, return_type=None, parameters=None):
     return None
 
 
-@login_required
-def jsonify_curr_user():
-    pass  # this will be used to render a users profile
+def reinsert_media():
+    """Use if you want to reinsert content and categories  into content the database
+       RUN WHEN YOU ALTER THEM IN THE VARIABLES FILE."""
+    try:
+        execute_query("DELETE FROM content;")
+        execute_query("DELETE FROM category;")
+        for catergor in variables.CATEGORIES:
+            execute_query(querys.ADD_CATEGORY, None, catergor)
+            for conts in variables.CONTENT[catergor]:
+                execute_query(querys.ADD_CONTENT, None, (conts, catergor))
+    except:
+        pass
 
 
 def retrieve_top_categories(rows=10):
     return execute_query(querys.RETRIEVE_TOP_CONTENT, "all", rows)
 
-# made it function so when we fix up our file structure
 
-
-def run_sound_show(clear_users=False):
+def run_sound_show(clear_users=False, reset_media=False):
     if clear_users:
         # since its a forign key constrain
         execute_query("DELETE FROM user_interests;")
         execute_query("DELETE FROM user;")
         execute_query(querys.RESET_CONTENT_COUNT)
-    sound_show.run(debug=True, threaded =True, host='0.0.0.0')
+    if reset_media:
+        reinsert_media()
+    sound_show.run(debug=True, threaded=True, host='0.0.0.0')
 
 
 def recreate_tables():
     try:
+        execute_query(tables.USER_SEARCH_HISTORY)
         execute_query(tables.USER)
         execute_query(tables.CATEGORY)
         execute_query(tables.CONTENT)
         execute_query(tables.USER_INTERESTS)
         execute_query(tables.NUM_INTERESTED_VIEW)
+
     except:
         pass
+
+
+@login_required
+def jsonify_curr_user():
+    pass  # this will be used to render a users profile
+
+
+# made it function so when we fix up our file structure
 
 
 @sound_show.route("/")
@@ -96,9 +115,17 @@ def new_user(curr_uuid, name):
 @sound_show.route("/insert_categories/<curr_uuid>/<name>")
 def insert_categories(curr_uuid, name):
     categor = variables.CATEGORIES
-    print(categor, file = sys.stdout)
     return render_template("insert_categories.html", curr_uuid=curr_uuid,
                            user_name=session["username"], name=name, categor=categor)
+
+
+@login_required
+@sound_show.route("/search_results/<uuid>/<search_term>")
+def search_results(curr_uuid, search_term):
+    # resources = ThreadEngine(search_term)
+    return render_template("search_results.html", curr_uuid=session["uuid"],
+                           search_term=search_term[0],
+                           data=ThreadEngine.retrieve_content(search_term))
 
 
 @login_required
@@ -109,8 +136,19 @@ def add_content(curr_uuid, name):
 
 
 @login_required
+@sound_show.route("/custom_search")
+def custom_search():
+    if request.form:
+        search_term = request.form["search_term"]
+        if search_term != "":
+            return redirect(url_for(search_results, session["uuid"], [search_term]))
+        return render_template("user_home.html", user_name=session["username"], data=populate_home_page())
+    print("No form selected:", file=sys.stdout)
+
+
+@login_required
 def retrieve_intial_content():
-    '''Retrieve content from sessiion varaible'''
+    '''Retrieve content from session varaible'''
     # this function can be used for a few things
     # when the user is going thru the registration proccess and its time
     # for them to select more specific content,
@@ -126,8 +164,8 @@ def retrieve_intial_content():
 @login_required
 @sound_show.route("/insert_new_user_categories", methods=["POST"])
 def insert_new_user_categories():
-    '''This function will store the categories a user selected 
-    as a session varaible, no need to store this information in the data base, since we arent 
+    '''This function will store the categories a user selected
+    as a session varaible, no need to store this information in the data base, since we arent
     really doing much with this information'''
     if request.form:
         # since the ids in the form are the same
@@ -137,7 +175,6 @@ def insert_new_user_categories():
             # since we already have the name we can check to see if
             # its been selected, using the following line.
             # If its been selected then we can go ahead and add it to the session variable
-            print(request.form.getlist(cats), file = sys.stdout)
             selected = bool(request.form.getlist(cats))
             if selected:
                 session["categories"].append(cats)
@@ -171,12 +208,15 @@ def populate_home_page():
             interests.extend(obj.values())
             # list of query results we call.values() whichh will return a list of
             # values, and we extend that to the interests
-        return ThreadEngines.retrieve_content(interests)  
+        # we make a call to the threading process to speed up the
+        # retrieval of the webpage
+        return ThreadEngine.retrieve_content(interests)
     # we repeat the same steps if the user has selected initial interests
     for obj in users_interests:
         interests.extend(obj.values())
-   
-    return ThreadEngines.retrieve_content(interests)
+    # if they did select interests we add pass that along to the
+    # threading Engine and return the results
+    return ThreadEngine.retrieve_content(interests)
 
 
 @login_required
@@ -184,8 +224,7 @@ def populate_home_page():
 def user_home(curr_uuid):
     '''If the user hasnt selected any content yet, we automatticaly pick the top
     10 and display it with out storing it in the users interests, other wise we display
-    everything the user is interested in.
-    This is where we would make calls to the APIs with all the data needed.'''
+    everything the user is interested in. Populate home page retrieves the data we need'''
     return render_template("user_home.html", user_name=session["username"], data=populate_home_page())
 
 
@@ -267,25 +306,15 @@ def profile(curr_uuid):
                            data=jsonify_curr_user())
 
 
-def insert_content():
-    """Use if you want to reinsert content into content table"""
-    try:
-        execute_query("DELETE FROM content")
-        for catergor in sorted(variables.CONTENT.keys()):
-            for conts in variables.CONTENT[catergor]:
-                execute_query(querys.ADD_CONTENT, None, (conts, catergor))
-    except:
-        pass
-
-
 if __name__ == "__main__":
     # will try to come with a query that removes the table if it already
     # exists. Insertign all information from it, into the new table
     # this is just so that if we make changes to the colomuns or constraints
     # run_sound_show()
-    try:
-        execute_query(querys.RESET_CONTENT_COUNT)
-        execute_query(tables.USER_INTERESTS)
-    except:
-        pass
-    run_sound_show(True)
+    # try:
+    #     execute_query(querys.RESET_CONTENT_COUNT)
+    #     execute_query(tables.USER_INTERESTS)
+    # except:
+    #     pass
+    execute_query(tables.USER_SEARCH_HISTORY)
+    run_sound_show(True, True)
