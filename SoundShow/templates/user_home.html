@@ -17,7 +17,7 @@
       <p>Title: {{items["title"]}}</p>
     </b>
     <p>Description:{{items["description"]}}</p>
-    <a href={{ items["url"] }}>Link</a>
+    <a href={{ items["url"] }} target="_blank">Link</a>
     <br>
     <img src= {{ items["img_url"] }} />
     <br>
@@ -34,7 +34,7 @@
         <br>
         <p>Channel: {{items["channel"]}}</p>
         <br>
-        <a href = {{ items["channel_link"] }}>Channel Link</a>
+        <a href = {{ items["channel_link"] }} target="_blank">Channel Link</a>
       {% endfor %}
   </body>
 </html>

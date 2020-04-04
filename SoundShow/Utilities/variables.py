@@ -17,7 +17,7 @@ CONTENT =  {
     "pets" : ["cat videos", "pet shows"],
     "health" : ["weight lifting", "body building", "healthy recipes", "weight loss tips", "keto diet", 
                 "muscle gaining tips"],
-    "video games": ["first person shooters", "VR/AR games", "upcoming video game releases", "video game consoles"],
+    "games": ["first person shooters", "VR/AR games", "upcoming video game releases", "video game consoles"],
     "sports" : ["soccer news", "basketball news", "baseball news", "tennis news", "cricket news", "boxing news",
                 "MMA news"],
     "art" : ["street art", "famous paintings", "famous artists", "art shows", "art auctions"],

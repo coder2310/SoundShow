@@ -1,22 +1,61 @@
 <!DOCTYPE html>
-<link
-  rel="stylesheet"
-  type="text/css"
-  href="{{url_for('static' ,filename = 'styles/index.css')}}"
-/>
-<html lang="en">
+
+<html>
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Welcome to SoundShow</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link
+      rel="stylesheet"
+      type=" text/css"
+      href="{{url_for('static',filename = 'styles/index.css')}}"
+    />
+
+    <title>SoundShow</title>
   </head>
+
   <body>
-    <h1>Welcome to SoundShow</h1>
-    <a link href="/login">Login to SoundShow</a>
-    <br />
-    <a link href="/register">Register for SoundShow</a>
-    <br />
-    <a link href="/info">About SoundShow</a>
-    <br />
+    <!-- <div style="background-image: url('./static/styles/images.jpeg');"> -->
+
+    <!-- this is only for the soundshow logo to make it pretty -->
+    <div class="main">
+      <ul>
+        <div class="first">
+          <li>S</li>
+
+          <li>o</li>
+        </div>
+        <div class="third">
+          <li>u</li>
+
+          <li>n</li>
+        </div>
+        <div class="fifth">
+          <li>d</li>
+
+          <li>S</li>
+        </div>
+        <div class="seven">
+          <li>h</li>
+
+          <li>o</li>
+
+          <li>w</li>
+        </div>
+      </ul>
+    </div>
+
+    <div class="dropdown">
+      <button class="dropbtn">
+        <img src="{{url_for('static',filename = 'img/hamb.png')}}" />
+      </button>
+      <div class="dropdown-content">
+        <a link href="/login">Login</a>
+
+        <a link href="/register">Register</a>
+
+        <a link href="/info">About</a>
+      </div>
+    </div>
   </body>
 </html>

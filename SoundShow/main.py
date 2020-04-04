@@ -53,7 +53,7 @@ def run_sound_show(clear_users=False):
         execute_query("DELETE FROM user_interests;")
         execute_query("DELETE FROM user;")
         execute_query(querys.RESET_CONTENT_COUNT)
-    sound_show.run(debug=True)
+    sound_show.run(debug=True, threaded =True, host='0.0.0.0')
 
 
 def recreate_tables():
@@ -96,6 +96,7 @@ def new_user(curr_uuid, name):
 @sound_show.route("/insert_categories/<curr_uuid>/<name>")
 def insert_categories(curr_uuid, name):
     categor = variables.CATEGORIES
+    print(categor, file = sys.stdout)
     return render_template("insert_categories.html", curr_uuid=curr_uuid,
                            user_name=session["username"], name=name, categor=categor)
 
@@ -123,7 +124,7 @@ def retrieve_intial_content():
 
 
 @login_required
-@sound_show.route("/insert_new_user_categoires", methods=["POST"])
+@sound_show.route("/insert_new_user_categories", methods=["POST"])
 def insert_new_user_categories():
     '''This function will store the categories a user selected 
     as a session varaible, no need to store this information in the data base, since we arent 
@@ -136,6 +137,7 @@ def insert_new_user_categories():
             # since we already have the name we can check to see if
             # its been selected, using the following line.
             # If its been selected then we can go ahead and add it to the session variable
+            print(request.form.getlist(cats), file = sys.stdout)
             selected = bool(request.form.getlist(cats))
             if selected:
                 session["categories"].append(cats)

@@ -1,63 +1,76 @@
 <html>
-  <head>
+   <head>
+    <meta charset="UTF-8" />
+    <link  rel="stylesheet" type=" text/css" href="{{url_for('static',filename = 'styles/register.css')}}" >
+
     <title>Register</title>
   </head>
   <body>
-    <h1>Register</h1>
-    {# <script type= text/javascript src= /static/js/validate.js"></script> #}
-    <div>
-      <form action="/reg_auth" method="post">
-        <input
-          type="text"
-          name="first_name"
-          placeholder="first Name"
-          required
-        />
-        <br />
-        <input type="text" name="last_name" placeholder="last Name" required />
-        <br />
-        <div>
-          <h2>A good username should have the following:</h2>
-          <div>
-            <ul>
-              <li>At least 6 characters</li>
-              <li>At least one number</li>
-              <li>At least one character</li>
-              <li>No Special characters</li>
-            </ul>
-          </div>
-        </div>
-        <input type="text" name="user_name"class ="username-input" placeholder="username" required />
-        <script>
-          
-        </script>
-        <br />
-        <div>
-          <h2>Password Requirments</h2>
-          <div>
-            <ul>
-              <li>Between 8 and 12 characters</li>
-              <li>At least one number</li>
-              <li>At least one uppercase character</li>
-              <li>at least one special character in the set ! @ # $ &</li>
-            </ul>
-          </div>
-        </div>
-        <input
-          type="password"
-          name="pass_word"
-          placeholder="password"
-          required
-        />
-        <br />
-        <input type="submit" value="Register" />
-      </form>
-      <div>
-        <a href="/login">Login to SoundShow</a>
-        <br />
-        <a href="/">Welcome Page</a>
-      </div>
+  
+
+<form action="/reg_auth" method="post">
+
+  <div class="dropdown">
+  <button class="dropbtn">
+
+
+    <img src="./static/img/hamb.png" class="hamb">
+
+
+
+  </button>
+  <div class="dropdown-content">
+  <a link href="/">Home</a>
+  
+    <a link href="/login">Login</a>
+
+    <a link href="/info">About</a>
+  </div>
+</div>
+  <div class="container container-large" style="border:5px solid #ccc">
+     <small> <h1>Sign Up</h1></small>
+        <hr>
+    <small>
+
+  <!-- for flask, first name -->
+     <label for="first_name"><b>First Name</b></label>
+      <input type="text" placeholder="first Name" name="first_name" required>
+
+  <!-- for flask, last name -->
+     <label for="last_name"><b>Last Name</b></label>
+      <input type="text" placeholder="last name" name="last_name" required>
+
+  <!-- for flask, email -->
+      <label for="email"><b>Email</b></label>
+      <input type="text" placeholder="email" name="email" required>
+
+  <!-- for flask, username -->
+      <label for="username"><b>Username</b></label>
+      <input type="text" placeholder="username" name="user_name" required>
+
+  <!-- for flask, password -->
+      <label for="pass_word"><b>Password</b></label>
+      <input type="password" placeholder="password" name="pass_word" required>
+
+
+
+
+ 
+    <p>By creating an account you agree to our <a href="/terms" style="color:red">Terms & Privacy</a>.</p>
+
+    <div class="clearfix">
+      <button type="button"  class="cancelbtn"><a href="/" style="color:white"> Cancel</button></a>
+      <button type="submit" class="signupbtn">Sign Up</button>
     </div>
+    </small>
+
+  </div>
+
+
+</form>
+
+<div style="color:white">
     {% if error %} {{ error }} {% endif %}
+  </div>
   </body>
 </html>

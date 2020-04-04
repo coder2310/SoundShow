@@ -35,7 +35,7 @@ def g_interests_thread(lst_interests):
     while len(deq) > 0:
         res = deq.popleft()
         content.extend(res)
-    return "google_interests", content
+    return "google_search", content
 
 def y_interests_thread(lst_interests):
     deq = deque()
@@ -51,7 +51,7 @@ def y_interests_thread(lst_interests):
     while len(deq) > 0:
         res = deq.popleft()
         content.extend(res)
-    return "youtube_interests", content
+    return "youtube_search", content
 
 
 
@@ -67,6 +67,7 @@ def s_interests(lst_interests):
 
 def s_interests_thread(lst_interests):
     pass
+
 def retrieve_content(lst_interests):
     # we this the functions that will create threads
     # and return the dictionary

@@ -1,10 +1,88 @@
 <html>
-  <head>
+   <head>
+    <meta charset="UTF-8" />
+    <link  rel="stylesheet" type=" text/css" href="{{url_for('static',filename = 'styles/login.css')}}" >
+
     <title>Login</title>
   </head>
+
   <body>
-    <h1>Login to view your stages</h1>
-    <div>
+<!--     <a href="/">
+              <img src="./static/styles/logo.png" >
+        </a>
+    -->
+
+<div class= "main" style="border:5px solid #ccc">
+<form action="/login_auth" method="post">
+  <div class="imgcontainer">
+    <a href="/"><img src="{{url_for('static',filename = 'img/logo.png')}}" alt="logo" class="avatar"></a>
+        
+  </div>
+
+
+
+  <div class="container" >
+    <label for="user_name"><b>Username</b></label>
+
+    <input type="text" placeholder="Enter Username" name="user_name" required>
+
+    <label for="pass_word"><b>Password</b></label>
+
+    <input type="password" placeholder="Enter Password" name="pass_word" required>
+
+    <button type="submit">Login</button>
+
+ <div class= "checks">
+    <label>
+      <input type="checkbox" checked="checked" name="remember"> Remember me
+
+    </label>
+  </div>
+    <span class="help"><a href="/help" style="color:gray">
+        Need Help? </a>
+     </span>
+
+  </div>
+
+</div>
+
+
+<div class="dropdown">
+  <button class="dropbtn">
+
+
+    <img src="{{url_for('static',filename = 'img/hamb.png')}}" class="hamb">
+
+
+
+  </button>
+  <div class="dropdown-content">
+  <a link href="/">Home</a>
+  
+    <a link href="/register">Register</a>
+
+    <a link href="/info">About</a>
+  </div>
+</div>
+
+  
+
+
+
+ <!--  <div class="container" style="background-color:#f1f1f1">
+
+  
+
+    <span class="psw"> <a href="/register">Register?</a></span>
+
+  </div> -->
+
+</form>
+
+
+
+
+ <!--    <div>
       <form action="/login_auth" method="post">
         <input type="text" name="user_name" placeholder="username" required />
         <br />
@@ -17,12 +95,18 @@
         <br />
         <input type="submit" value="Login" />
       </form>
+
+
       <div>
-        <a href="/register">Don't have an account? Sign up here</a>
+
+        <a href="/register"> Sign up </a>
         <br />
-        <a href="/">Go back to home page</a>
+
+        
       </div>
-    </div>
+    </div> -->
+    <div style="color:white"> 
     {% if error %} {{ error }} {% endif %}
+    </div>
   </body>
 </html>
