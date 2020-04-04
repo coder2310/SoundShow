@@ -1,7 +1,6 @@
 flask
 pymysql
 uuid
-hashlib
 google-api-python-client
 spotipy
 apiclient

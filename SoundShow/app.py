@@ -316,5 +316,5 @@ if __name__ == "__main__":
     #     execute_query(tables.USER_INTERESTS)
     # except:
     #     pass
-    execute_query(tables.USER_SEARCH_HISTORY)
-    run_sound_show(True, True)
+    #execute_query(tables.USER_SEARCH_HISTORY)
+    run_sound_show(clear_users=True)
