@@ -54,8 +54,12 @@ def retrieve_top_categories(rows=10):
     return execute_query(querys.RETRIEVE_TOP_CONTENT, "all", rows)
 
 
-def run_sound_show(clear_users=False, reset_media=False):
-    if clear_users:
+def run_sound_show(clear_users=False, reset_media=False, rebuild_tables = False):
+    if rebuild_tables:
+        # this would empty our data base so no need to run the other statements
+        recreate_tables()
+        reinsert_media()
+    elif clear_users:
         # since its a forign key constrain
         execute_query("DELETE FROM user_interests;")
         execute_query("DELETE FROM user;")
@@ -67,13 +71,19 @@ def run_sound_show(clear_users=False, reset_media=False):
 
 def recreate_tables():
     try:
-        execute_query(tables.USER_SEARCH_HISTORY)
+        execute_query(querys.DROP_TABLE.format("user"))
+        execute_query(querys.DROP_TABLE.format("category"))
+        execute_query(querys.DROP_TABLE.format("content"))
+        execute_query(querys.DROP_TABLE.format("user_interests"))
+        execute_query(querys.DROP_TABLE.format("user_search_history"))
+        execute_query(querys.DROP_VIEW.format("Num_Interested"))
         execute_query(tables.USER)
         execute_query(tables.CATEGORY)
         execute_query(tables.CONTENT)
         execute_query(tables.USER_INTERESTS)
+        execute_query(tables.USER_SEARCH_HISTORY)
         execute_query(tables.NUM_INTERESTED_VIEW)
-
+       
     except:
         pass
 
@@ -317,4 +327,4 @@ if __name__ == "__main__":
     # except:
     #     pass
     #execute_query(tables.USER_SEARCH_HISTORY)
-    run_sound_show(clear_users=True)
+    run_sound_show(clear_users=True, rebuild_tables=False)
