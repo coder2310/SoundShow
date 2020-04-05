@@ -1,32 +1,42 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <link  rel="stylesheet" type=" text/css" href="{{url_for('static',filename = 'styles/new_user.css')}}" >
     <title>Welcome to SoundShow {{name}}</title>
-    <p>Lets begin by selecting your favorite categories</p>
-    <style>
-      .button {
-        background-color: #1c87c9;
-        border: none;
-        color: white;
-        padding: 20px 34px;
-        text-align: center;
-        text-decoration: none;
-        display: inline-block;
-        font-size: 20px;
-        margin: 4px 2px;
-        cursor: pointer;
-      }
-    </style>
+    
+
+    <div class="imgcontainer">
+    <a><img src="{{url_for('static',filename = 'img/logo.png')}}" alt="logo" class="avatar"></a>
+        
+  </div>
+
+
+
   </head>
-  <body>
-    <a
-      href="{{url_for('insert_categories', curr_uuid = curr_uuid, user_name = user_name, name = name, error = None)}}"
-      class="button"
-      >Let's Go</a
-    >
-    <br />
-    <a href="{{url_for('user_home', curr_uuid = curr_uuid)}}" class="button"
-      >Pick later</a
-    >
-  </body>
+
+  <div class="whole">
+  
+<div style="text-align:center;">
+
+
+  <font color="white" size=+2>Let's begin by selecting your favorite categories<br>
+<br></font>
+  
+</div>
+
+
+<div style="text-align:center;" >
+
+<button class="button" style="vertical-align:middle"><a href="{{url_for('insert_categories', curr_uuid = curr_uuid, user_name = user_name, name = name, error = None)}}" ><span><font color="white">Let's Go</span> </a>  </button>
+
+
+
+<button class="button" style="vertical-align:middle" ><a href="{{url_for('user_home', curr_uuid = curr_uuid)}}" ><span><font color="white">Pick Later</span> </a>  </button>
+</div>
+
+
+</div>
+
+
+
 </html>

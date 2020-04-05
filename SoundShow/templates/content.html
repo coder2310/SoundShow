@@ -1,32 +1,71 @@
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Lets narrow it down a bit</title>
+    <link  rel="stylesheet" type=" text/css" href="{{url_for('static',filename = 'styles/content.css')}}" >
+    <title>Welcome to SoundShow {{name}}</title>
+      <div class="imgcontainer">
+    <a><img src="{{url_for('static',filename = 'img/logo.png')}}" alt="logo" class="avatar"></a>
+        <br>
+  </div>
   </head>
   <body>
-    <p>
-      Based on the categories you selected here are some more specific content.
-    </p>
+
+  
+  <div style="text-align:center;">
+
+
+  <font color="white" size=+2> Based On The Categories You Selected Here Are Some More Specific Content</font>
+  
+</div>
+    
+
     <div>
+
+
+<div class="container">
+  <ul class="ks-cboxtags">
+
       <form action="/add_user_content" method="POST">
-        {% for elem in categories %} {{elem}}
+        {% for elem in categories %} 
+        <div style="text-align:center;">
+        <font color="white" size=+1> {{elem}}</font>
+                  <br>
+          <br>
+        </div>
+        
         <div>
           {% for conts in categories[elem] %} {% set conts_rep =
           conts.replace('-', ' ') %}
-          <div>
-            <input type="checkbox" id="{{conts}}" name="{{conts}}" />
-            <label for="{{conts}}">{{conts_rep}}</label>
-            <br />
-          </div>
+          
+           <li> <input type="checkbox" id="{{conts}}" name="{{conts}}" /><label for="{{conts}}">{{conts_rep}}</label></li>
+            
+
+         
+        
           {% endfor %}
+          <br>
+          <br>
+          <br>
+          <br>
         </div>
-        <br />
+        <br>
         {% endfor %}
         <input type="submit" value="Continue" />
       </form>
+
       <br />
     </div>
+
+
+</ul>
+</div>
+
+
+
+
+
   </body>
 </html>

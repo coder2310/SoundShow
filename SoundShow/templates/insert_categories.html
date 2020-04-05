@@ -3,32 +3,54 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Welcome to SoundShow {{user_name}}</title>
-    <h1>Lets set up your profile {{name}}</h1>
-    <div>
-      <p>
-        SoundShow lets you pick your favorite categories
-        and present you with media content based on those categories.
-        Music, video, podcasts you name it, SoundShow will find it.
-        Lets get started on picking some categories, we'll ask you about more
-        specific ones later.
-      </p>
-        <div>
-          <form action= "/insert_new_user_categories" method = "POST">
-            <ul>
-              {% for cats in categor %}
-              {% set pic = cats + ".jpg" %}
-                <img src = "{{url_for('static' ,filename = 'img/' + pic)}}" height = 100 width = 100>
-                <input type ="checkbox" id = {{cats}} name = {{cats}}>
-                <label for = {{cats}}> {{cats}}</label>
-                <br>
-              {%endfor%}
-              <input type="submit" value= "Continue">
-          </form>
-          </ul>
-        </div>
+    <link
+      rel="stylesheet"
+      type=" text/css"
+      href="{{url_for('static',filename = 'styles/insert_categories.css')}}"
+    />
+
+    <div class="imgcontainer">
+      <a
+        ><img
+          src="{{url_for('static',filename = 'img/logo.png')}}"
+          alt="logo"
+          class="avatar"
+      /></a>
+      <br />
     </div>
+    <title>Welcome to SoundShow {{name}}</title>
   </head>
-  <body>
-  </body>
+  <div class="whole">
+    <div style="text-align: center;">
+      <font color="white" size="+2">Pick your favorite categories {{name}}</font>
+      <br>
+    </div>
+  </div>
+  <br>
+  <div>
+    <br>
+  </div>
+  <br>
+  <div class="container">
+    <ul class="ks-cboxtags">
+      <div>
+        <form action="/insert_new_user_categories" method="POST">
+          {% for cats in categor %}
+
+          <li>
+            <input type="checkbox" id="{{cats}}" name="{{cats}}" /><label
+              for="{{cats}}"
+            >
+              {{cats}}</label
+            >
+          </li>
+
+          {%endfor%}
+          <br />
+
+          <input type="submit" value="Next" />
+        </form>
+      </div>
+    </ul>
+  </div>
 </html>

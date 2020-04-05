@@ -1,0 +1,85 @@
+body{
+
+	background: black; 
+	margin: 0;
+	padding: 0;
+
+}
+
+
+.imgcontainer {
+  text-align: left;
+  margin: 24px 0 12px 0;
+}
+.container{
+	 font-family: "Arial";
+	 color: white;
+}
+/**/
+
+/* Avatar image */
+img.avatar {
+  width: 20%;
+
+  border-radius: 0%;
+}
+
+.whole{
+	padding: 15px;
+  width: 500px;
+  height: 500px;
+  position: fixed;
+  left: 50%;
+  top: 65%;
+  right: 50%;
+  bottom: 50%;
+
+  transform: translate(-50%, -35%);
+}
+
+.button {
+  border-color: white;
+  display: inline-block;
+  border-radius: 20px;
+  background-color: black;
+  border: 3px solid white;
+  color: white;
+  text-align: center;
+  font-size: 28px;
+  padding: 20px;
+  width: 200px;
+  transition: all 0.5s;
+  cursor: pointer;
+  margin: 10px;
+}
+
+.button span {
+  cursor: pointer;
+  display: inline-block;
+  position: relative;
+  transition: 0.5s;
+}
+
+.button span:after {
+  content: '\00bb';
+  position: absolute;
+  opacity: 0;
+  top: 0;
+  right: -20px;
+  transition: 0.5s;
+}
+
+.button:hover span {
+  padding-right: 25px;
+  color: white;
+}
+
+.button:hover span:after {
+  opacity: 1;
+  right: 0;
+  color: white;
+}
+
+a:visited {
+  color: white;
+}
