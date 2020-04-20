@@ -96,7 +96,30 @@ def recreate_tables():
 
 @login_required
 def jsonify_curr_user():
-    pass  # this will be used to render a users profile
+    result = {
+        "name": None,
+        "username": session["username"],
+        "userID" : session["uuid"],
+        "joined" : None,
+        "interests": [],
+        "search history" : []
+    }
+    # name_query = execute_query(querys.GET_FULL_NAME, "one", (session["username"]))
+    # full_name = name_query["first_name"] + " " + name_query["last_name"]
+    # joined_query = 
+    print(session["username"], file = sys.stdout)
+    user_query = execute_query(querys.GET_INFO_USING_USERNAME, "one", (session["username"]))
+    print("Results:", user_query, file = sys.stdout)
+    result["name"] = user_query["first_name"] + " " + user_query["last_name"]
+    result["joined"] = str(user_query["joined"])
+    user_interests = execute_query(querys.GET_USERS_INTERESTS, "all", (session["username"]))
+    for rows in user_interests:
+        result["interests"].append(rows["content_name"])
+    search_history = execute_query(querys.GET_USER_SEARCH_HISTORY, "all", (session["username"]))
+    for rows in search_history:
+        result["search history"].append(rows)
+    return result
+
 
 
 # made it function so when we fix up our file structure
@@ -272,7 +295,7 @@ def user_home(curr_uuid):
     '''If the user hasnt selected any content yet, we automatticaly pick the top
     10 and display it with out storing it in the users interests, other wise we display
     everything the user is interested in. Populate home page retrieves the data we need'''
-    return render_template("user_home.html", user_name=session["username"], data=populate_home_page())
+    return render_template("user_home.html", curr_uuid = session["uuid"], user_name=session["username"], data=populate_home_page())
 
 
 @sound_show.route("/register", methods=["GET"])
@@ -365,4 +388,4 @@ if __name__ == "__main__":
     #execute_query(tables.USER_SEARCH_HISTORY)
     
 
-    run_sound_show(rebuild_tables= True,clear_users=True)
+    run_sound_show()

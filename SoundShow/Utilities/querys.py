@@ -7,6 +7,7 @@ GET_INFO_USING_USERNAME = "SELECT * FROM user WHERE user_name = %s;"
 GET_INFO_USING_UUID = "SELECT * FROM user WHERE UUID = %s;"
 DROP_TABLE = "DROP TABLE IF EXISTS {};"  # have to use DROP_TABLE.format(table_name)
 DROP_VIEW = "DROP VIEW IF EXISTS {};"
+GET_FULL_NAME = "SELECT first_name, last_name FROM user WHERE user_name = %s;"
 # have to use TRUNCATE_TABLE.format(table_name)
 
 TRUNCATE_TABLE = "TRUNCATE TABLE {};"
@@ -30,5 +31,6 @@ RESET_CONTENT_COUNT =  "UPDATE content\
 RETRIEVE_RELATED_CONTENT = "SELECT content_name FROM content WHERE category_name = %s;"
 RETRIEVE_TOP_CONTENT = "SELECT content_name FROM content ORDER BY(num_interested) DESC LIMIT %s;"
 GET_USERS_INTERESTS = "SELECT content_name FROM user_interests WHERE user_name = %s;"
-INSER_INTO_HISTORY = "INSERT INTO user_search_history (user_name, search_term, searched_at) \
+INSERT_INTO_HISTORY = "INSERT INTO user_search_history (user_name, search_term, searched_at) \
                     VALUES(%s, %s, %s);"
+GET_USER_SEARCH_HISTORY = "SELECT search_term, searched_at FROM user_search_history WHERE user_name = %s;"

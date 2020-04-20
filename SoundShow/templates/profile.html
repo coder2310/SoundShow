@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <p>Name: {{data["name"]}}</p>
+    <br>
+    <p>username: {{data["username"]}}</p>
+    <br>
+    <p>UUID: {{data["userID"]}}</p>
+    <br>
+    <p>Joined: {{data["joined"]}}</p>
+    <br>
+    <p>Interests: {{data["interests"] }}</p>
+    <br>
+    <p>Search History: {{data["search history"]}}</p>
+    <a href = "{{url_for('user_home',curr_uuid = curr_uuid)}}">Go back home</a>
+</body>
+</html>
