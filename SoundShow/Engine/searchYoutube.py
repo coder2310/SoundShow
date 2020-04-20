@@ -60,7 +60,7 @@ def youtube_search_keyword(query, max_results = 10):
             "channels" : channels
         }
     
-        
+
 def extract_data(search_term):
     #Object will be simialar that for news
     # title

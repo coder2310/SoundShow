@@ -1,5 +1,6 @@
 from collections import deque
 from threading import Thread
+import json
 import sys
 
 # import Engine.searchGoogle
@@ -70,6 +71,18 @@ def s_interests(lst_interests):
     print(results, file = sys.stdout)
     return "spotify_search", results
 
+# def pre_loaded_spotify_data():
+#     with open("spot.txt", "r+") as spot:
+#         results = json.load(spot)
+#         return results
+#     print("FILE NOT FOUND", file = sys.stdout)
+
+# def pre_loaded_youtube_data():
+#     # with open("tub.json", "r+") as tube:
+#     #     results = json.load(tube)
+#     #     return results
+#     pass
+
 def s_interests_thread(lst_interests):
     pass
 
@@ -83,31 +96,31 @@ def retrieve_content(lst_interests, has_spot = False):
         "youtube_search": []
     }
     # this is what we will use to store the thread results
-    deq = deque()
-    threads_list = []
-    gt = Thread(target=lambda q, lst_interests: q.append(
-        g_interests_thread(lst_interests)), args=(deq, lst_interests))
-    # we create and start threed add it to the list and the results are then stored in the
-    # deque
-    gt.start()
-    threads_list.append(gt)
-    # yt = Thread(target=lambda q, lst_interests: q.append(y_interests(lst_interests)), args=(deq, lst_interests))
-    # yt.start()
-    # # # TODO add spotify thread when this done
-    # threads_list.append(yt)
-    if has_spot:
-        resources["spotify_search"] = []
-        st = Thread(target=lambda q, lst_interests: q.append(s_interests(lst_interests)), args=(deq, lst_interests))
-        st.start()
-        threads_list.append(st)
-    for thread in threads_list:
-        thread.join()  # we join execution for each one
-    while len(deq) > 0:
-        # since threads are nondeterminitstic we dont know which one
-        # will finish first which is why we also will return the key that
-        # the function representes int the dictionary
-        # and we set it accordingly
-        result = deq.popleft()
-        resources[result[0]] = result[1]
-    print("Spotify Search Results:", len(resources["spotify_search"]),file = sys.stdout)
+    # deq = deque()
+    # threads_list = []
+    # gt = Thread(target=lambda q, lst_interests: q.append(
+    #     g_interests_thread(lst_interests)), args=(deq, lst_interests))
+    # # we create and start threed add it to the list and the results are then stored in the
+    # # deque
+    # gt.start()
+    # threads_list.append(gt)
+    # # yt = Thread(target=lambda q, lst_interests: q.append(y_interests(lst_interests)), args=(deq, lst_interests))
+    # # yt.start()
+    # # # # TODO add spotify thread when this done
+    # # threads_list.append(yt)
+    # # if has_spot:
+    # #     resources["spotify_search"] = searchSpotify.pre_loaded_spotify_data()
+    #     # st = Thread(target=lambda q, lst_interests: q.append(s_interests(lst_interests)), args=(deq, lst_interests))
+    #     # st.start()
+    #     # threads_list.append(st)
+    # for thread in threads_list:
+    #     thread.join()  # we join execution for each one
+    # while len(deq) > 0:
+    #     # since threads are nondeterminitstic we dont know which one
+    #     # will finish first which is why we also will return the key that
+    #     # the function representes int the dictionary
+    #     # and we set it accordingly
+    #     result = deq.popleft()
+    #     resources[result[0]] = result[1]
+    #print("Spotify Search Results:", len(resources["spotify_search"]),file = sys.stdout)
     return resources

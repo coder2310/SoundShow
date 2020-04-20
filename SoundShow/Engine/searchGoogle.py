@@ -71,7 +71,10 @@ def get_recent_articles(topic):
     today, three_days_ago = str(datetime.date(today)), str(datetime.date(three_days_ago))
     url = 'https://newsapi.org/v2/everything?q={}&from={}&to={}&sortBy=popularity&apiKey={}'
     url = url.format(topic,three_days_ago, today,API_KEY)
-    return process_response(url)
+    result = process_response(url)
+    with open("google.json", "w+") as goog:
+        json.dump(result, goog)
+    return result
 
 def process_users_interests(interests):
     # we will experiment with what functions to use  here but get_recent_articles

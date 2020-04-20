@@ -2,6 +2,7 @@ import os
 import time
 import uuid
 import sys
+import json
 from functools import wraps
 import pymysql.cursors
 from Engine.ThreadAPIs import ThreadEngine
@@ -215,6 +216,7 @@ def populate_home_page():
         # dictionaries, where the value of each dictionary
         # is one of the users interests
         querys.GET_USERS_INTERESTS, "all", session["username"])
+    result = None
     interests = []  # this where we will populate those values
     if len(users_interests) == 0:  # if the user had not selected any intial interests
         # then we select the default_interests from the database,
@@ -231,19 +233,39 @@ def populate_home_page():
             # values, and we extend that to the interests
         # we make a call to the threading process to speed up the
         # retrieval of the webpage
-            return ThreadEngine.retrieve_content(interests, has_spot=True)
-        return ThreadEngine.retrieve_content(interests)
+            result = ThreadEngine.retrieve_content(interests, has_spot=True)
+            result["google_search"] = pre_loaded_google_data()
+            result["spotify_search"] = pre_loaded_spotify_data()
+            result["youtube_search"] = pre_loaded_youtube_data()
+            return result
     # we repeat the same steps if the user has selected initial interests
     for obj in users_interests:
         interests.extend(obj.values())
     # if they did select interests we add pass that along to the
     # threading Engine and return the results
-    print(session["categories"], file = sys.stdout)
+    #print(session["categories"], file = sys.stdout)
     if "Music Genres" in session["categories"]:
-            return ThreadEngine.retrieve_content(interests, has_spot=True)
-    return ThreadEngine.retrieve_content(interests)
+            result = ThreadEngine.retrieve_content(interests, has_spot=True)
+            result["google_search"] = pre_loaded_google_data()
+            result["spotify_search"] = pre_loaded_spotify_data()
+            result["youtube_search"] = pre_loaded_youtube_data()
+            return result
+    result["google_search"] = pre_loaded_google_data()
+    result["youtube_search"] = pre_loaded_youtube_data()
+    return result
     
-
+def pre_loaded_spotify_data():
+    with open("spot.json", "r+") as spot:
+        results = json.load(spot)
+        return results
+def pre_loaded_youtube_data():
+    with open("tube.json", "r+") as tube:
+        results = json.load(tube)
+        return results
+def pre_loaded_google_data():
+    with open("google.json", "r+") as goog:
+        results = json.load(goog)
+        return results
 @login_required
 @sound_show.route("/user_home/<curr_uuid>")
 def user_home(curr_uuid):
