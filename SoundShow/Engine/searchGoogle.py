@@ -32,11 +32,13 @@ def process_response(url):
             entry['title'] = results['title']
             if results['description']:
                 entry['description'] = results['description'][0:100] + '...'
+            else:
+                entry['description'] = "No description"
             entry['url'] = results['url']
             entry['img_url'] = results['urlToImage']
             data.append(entry)
     return data
-  
+
 def get_all_trending():
     url = 'http://newsapi.org/v2/top-headlines?country=us&apiKey={}'.format(API_KEY)
     return process_response(url)

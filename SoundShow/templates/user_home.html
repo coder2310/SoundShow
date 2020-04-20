@@ -6,7 +6,7 @@
     <title>Welcome back {{user_name}}</title>
   </head>
   <body>
-    <form action = "/custom_search">
+    <form action = "/custom_search" method = "post">
       <input type="text" name = "search_term" placeholder="Search">
       <button type ="submit">Search</button>
     </form>
@@ -34,12 +34,37 @@
         <br>
         <p>Description:{{items["description"]}}</p>
         <br>
-        <a href={{ items["url"] }}>Link</a>
+        <a href={{ items["url"] }} target = "_blank">Link</a>
         <img src = {{ items["image"] }}>
         <br>
         <p>Channel: {{items["channel"]}}</p>
         <br>
         <a href = {{ items["channel_link"] }} target="_blank">Channel Link</a>
+      {% endfor %}
+    <h2>Spotify Search Data</h2>
+    {% set spotify = data["spotify_search"] %}
+      {% for items in spotify %}
+        <p>Artist: {{items["artist"]}}</p>
+        <br>
+        <img src = {{ items["img_link"] }} />
+        <a href = {{ items["link"] }} target ="_blank">Go to Artist</a>
+        <p>Albums</p>
+        <br>
+        {% for album in items["albums"] %}
+          <p>Name: {{ album["name"] }}</p>
+          <br>
+          <p>Release Date: {{album["release date"] }}</p>
+          <br>
+          <a href = {{ album ["url"] }} target = "_blank">Go to album</a>
+          <br>
+        {% endfor %}
+        {% for tracks in items["top_tracks"] %}
+          <p>Track: {{tracks["track"] }}</p>
+          <audio controls>
+            <source src = {{ tracks["audio"] }}>
+          </audio>
+          <br>
+        {% endfor %}
       {% endfor %}
   </body>
 </html>

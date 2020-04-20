@@ -6,7 +6,7 @@ from functools import wraps
 import pymysql.cursors
 from Engine.ThreadAPIs import ThreadEngine
 from flask import (Flask, redirect, render_template, request, send_file,
-                   session, url_for)
+                session, url_for)
 
 
 from Utilities import querys, tables, utilities, variables
@@ -38,7 +38,7 @@ def execute_query(query, return_type=None, parameters=None):
 
 def reinsert_media():
     """Use if you want to reinsert content and categories  into content the database
-       RUN WHEN YOU ALTER THEM IN THE VARIABLES FILE."""
+    RUN WHEN YOU ALTER THEM IN THE VARIABLES FILE."""
     try:
         execute_query("DELETE FROM content;")
         execute_query("DELETE FROM category;")
@@ -55,15 +55,18 @@ def retrieve_top_categories(rows=10):
 
 
 def run_sound_show(clear_users=False, reset_media=False, rebuild_tables = False):
-    if rebuild_tables:
-        # this would empty our data base so no need to run the other statements
-        recreate_tables()
-        reinsert_media()
-    elif clear_users:
+    if clear_users:
         # since its a forign key constrain
         execute_query("DELETE FROM user_interests;")
         execute_query("DELETE FROM user;")
         execute_query(querys.RESET_CONTENT_COUNT)
+    if rebuild_tables:
+        # this would empty our data base so no need to run the other statements
+        recreate_tables()
+        reinsert_media()
+        sound_show.run(debug=True, threaded=True, host='0.0.0.0')
+        return
+
     if reset_media:
         reinsert_media()
     sound_show.run(debug=True, threaded=True, host='0.0.0.0')
@@ -75,6 +78,7 @@ def recreate_tables():
         execute_query(querys.DROP_TABLE.format("category"))
         execute_query(querys.DROP_TABLE.format("content"))
         execute_query(querys.DROP_TABLE.format("user_interests"))
+        execute_query(querys.DROP_TABLE.format("user_favorites"))
         execute_query(querys.DROP_TABLE.format("user_search_history"))
         execute_query(querys.DROP_VIEW.format("Num_Interested"))
         execute_query(tables.USER)
@@ -83,7 +87,8 @@ def recreate_tables():
         execute_query(tables.USER_INTERESTS)
         execute_query(tables.USER_SEARCH_HISTORY)
         execute_query(tables.NUM_INTERESTED_VIEW)
-       
+        execute_query(tables.USER_FAVORITES)
+
     except:
         pass
 
@@ -118,7 +123,7 @@ def new_user(curr_uuid, name):
     # will focus on UX later and better routing later just want basic
     # functionality first
     return render_template("new_user.html", curr_uuid=curr_uuid,
-                           user_name=session["username"], name=name)
+                        user_name=session["username"], name=name)
 
 
 @login_required
@@ -126,34 +131,40 @@ def new_user(curr_uuid, name):
 def insert_categories(curr_uuid, name):
     categor = variables.CATEGORIES
     return render_template("insert_categories.html", curr_uuid=curr_uuid,
-                           user_name=session["username"], name=name, categor=categor)
+                        user_name=session["username"], name=name, categor=categor)
 
 
 @login_required
-@sound_show.route("/search_results/<uuid>/<search_term>")
+@sound_show.route("/search_results/<curr_uuid>/<search_term>")
 def search_results(curr_uuid, search_term):
     # resources = ThreadEngine(search_term)
-    return render_template("search_results.html", curr_uuid=session["uuid"],
-                           search_term=search_term[0],
-                           data=ThreadEngine.retrieve_content(search_term))
+    # print(search_term[0], file = sys.stdout)
+    return render_template("search_results.html",
+    curr_uuid=session["uuid"],search_term=search_term,
+    data=ThreadEngine.retrieve_content([search_term]))
 
 
 @login_required
 @sound_show.route("/add_content/<curr_uuid>/<name>")
 def add_content(curr_uuid, name):
     return render_template("content.html", curr_uuid=curr_uuid, user_name=session["username"],
-                           name=name, categories=retrieve_intial_content())
+                        name=name, categories=retrieve_intial_content())
 
 
 @login_required
-@sound_show.route("/custom_search")
+@sound_show.route("/custom_search", methods = ["POST"])
 def custom_search():
     if request.form:
         search_term = request.form["search_term"]
         if search_term != "":
-            return redirect(url_for(search_results, session["uuid"], [search_term]))
+            # we insert into the user's search hisotry
+            # user_name, search_term, timestamp
+            searched_at = time.strftime('%Y-%m-%d %H:%M:%S')
+            execute_query(querys.INSER_INTO_HISTORY, None, (session["username"], search_term, searched_at))
+            return redirect(url_for('search_results', 
+                curr_uuid = session["uuid"], 
+                search_term=search_term))
         return render_template("user_home.html", user_name=session["username"], data=populate_home_page())
-    print("No form selected:", file=sys.stdout)
 
 
 @login_required
@@ -220,14 +231,18 @@ def populate_home_page():
             # values, and we extend that to the interests
         # we make a call to the threading process to speed up the
         # retrieval of the webpage
+            return ThreadEngine.retrieve_content(interests, has_spot=True)
         return ThreadEngine.retrieve_content(interests)
     # we repeat the same steps if the user has selected initial interests
     for obj in users_interests:
         interests.extend(obj.values())
     # if they did select interests we add pass that along to the
     # threading Engine and return the results
+    print(session["categories"], file = sys.stdout)
+    if "Music Genres" in session["categories"]:
+            return ThreadEngine.retrieve_content(interests, has_spot=True)
     return ThreadEngine.retrieve_content(interests)
-
+    
 
 @login_required
 @sound_show.route("/user_home/<curr_uuid>")
@@ -284,7 +299,7 @@ def reg_auth():
         user_uuid = str(uuid.uuid4())
         joined = time.strftime('%Y-%m-%d %H:%M:%S')
         fields = (first_name, last_name, user_name,
-                  pass_word,  user_uuid, joined)
+                pass_word,  user_uuid, joined)
         # will make a password strength checker later
         execute_query(querys.INSERT_USER, None, fields)
         session["username"] = user_name
@@ -302,7 +317,7 @@ def add_user_content():
                 selected = bool(request.form.getlist(conts))
                 if selected:
                     execute_query(querys.ADD_INTEREST, None,
-                                  (session["username"], session["uuid"], conts))
+                                (session["username"], session["uuid"], conts))
                     execute_query(querys.INCREASE_CONTENT_COUNT, None, conts)
                     # now we have to add this to the database
         return redirect(url_for("user_home", curr_uuid=session["uuid"]))
@@ -312,8 +327,7 @@ def add_user_content():
 @sound_show.route("/profile/<curr_uuid>")
 def profile(curr_uuid):
     '''Render the profile of the user with all the data needed'''
-    return render_template("profile.html", curr_uuid=curr_uuid, user_name=session["username"],
-                           data=jsonify_curr_user())
+    return render_template("profile.html", curr_uuid=curr_uuid, user_name=session["username"],data=jsonify_curr_user())
 
 
 if __name__ == "__main__":
@@ -327,4 +341,6 @@ if __name__ == "__main__":
     # except:
     #     pass
     #execute_query(tables.USER_SEARCH_HISTORY)
-    run_sound_show(clear_users=True, rebuild_tables=False)
+    
+
+    run_sound_show(rebuild_tables= True,clear_users=True)

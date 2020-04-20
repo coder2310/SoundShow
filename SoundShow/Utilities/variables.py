@@ -10,9 +10,9 @@ DB_CONN = {
     'autocommit': True
 }
 CONTENT = {
-    "Music": ["Hip Hop", "Rock", "Heavy Metal", "Pop Music", "Country Music", "Jazz", "Rap", "Blues",
-              "Billoard Top 100", "Billboard Top 200", "Latin Trap", "Reggaeton", "Spotify News", "Apple Music News"],
+    "Music News": ["Billoard Top 100", "Billboard Top 200", "Spotify News", "Apple Music News"],
     "Food": ["Cooking Channels", "Restraunts", "Popular Recipes", "Vegan Recipes", "Brunch Spots"],
+    "Music Genres":["Hip Hop","Rock", "Heavy Metal",  "Pop", "Country", "Jazz", "Rap", "Blues", "Latin Trap","Reggaeton"],
     "Travel": ["Weekend Getaways", "Exotic Islands", "Warm Weather", "Hiking", "African Safari", "City Touring"],
     "Literature": ["Poetry", "Recent Best Sellers", "Comic Books"],
     "Pets": ["Cat Videos", "Pet Shows", "Best Pet Foods"],

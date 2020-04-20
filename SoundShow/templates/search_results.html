@@ -6,8 +6,11 @@
     <title>Welcome back {{user_name}}</title>
   </head>
   <body>
-
-    <h1>Google Search Results</h1>
+    <form action = "/custom_search" method = "post">
+      <input type="text" name = "search_term" placeholder="Search">
+      <button type ="submit">Search</button>
+    </form>
+    <h1>Google Search Results {{search_term}}</h1>
     {%set google = data["google_search"]%} 
     {% for items in google %}
     <b>
@@ -37,5 +40,6 @@
         <br>
         <a href = {{ items["channel_link"] }} target="_blank">Channel Link</a>
       {% endfor %}
+    <a href = "{{url_for('user_home',curr_uuid = curr_uuid)}}">Go back home</a>
   </body>
 </html>

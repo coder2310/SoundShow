@@ -1,9 +1,11 @@
 from collections import deque
 from threading import Thread
+import sys
+
 # import Engine.searchGoogle
 # import Engine.searchSpotify
 # import Engine.searchGoogle
-from Engine import searchGoogle, searchYoutube
+from Engine import searchGoogle, searchYoutube, searchSpotify
 
 def g_interests(lst_interests):
     # each API now has its own function
@@ -63,15 +65,19 @@ def y_interests(lst_interests):
 
 
 def s_interests(lst_interests):
-    pass  # will write this function when spotify code is ready
+    print("Inside spotify", file =sys.stdout)
+    results = searchSpotify.artistForGenres(lst_interests)
+    print(results, file = sys.stdout)
+    return "spotify_search", results
 
 def s_interests_thread(lst_interests):
     pass
 
-def retrieve_content(lst_interests):
+def retrieve_content(lst_interests, has_spot = False):
     # we this the functions that will create threads
     # and return the dictionary
     # will use a deque to store the results
+
     resources = {
         "google_search": [],
         "youtube_search": []
@@ -80,15 +86,20 @@ def retrieve_content(lst_interests):
     deq = deque()
     threads_list = []
     gt = Thread(target=lambda q, lst_interests: q.append(
-        g_interests(lst_interests)), args=(deq, lst_interests))
+        g_interests_thread(lst_interests)), args=(deq, lst_interests))
     # we create and start threed add it to the list and the results are then stored in the
     # deque
     gt.start()
     threads_list.append(gt)
     # yt = Thread(target=lambda q, lst_interests: q.append(y_interests(lst_interests)), args=(deq, lst_interests))
     # yt.start()
-    # # TODO add spotify thread when this done
+    # # # TODO add spotify thread when this done
     # threads_list.append(yt)
+    if has_spot:
+        resources["spotify_search"] = []
+        st = Thread(target=lambda q, lst_interests: q.append(s_interests(lst_interests)), args=(deq, lst_interests))
+        st.start()
+        threads_list.append(st)
     for thread in threads_list:
         thread.join()  # we join execution for each one
     while len(deq) > 0:
@@ -98,4 +109,5 @@ def retrieve_content(lst_interests):
         # and we set it accordingly
         result = deq.popleft()
         resources[result[0]] = result[1]
+    print("Spotify Search Results:", len(resources["spotify_search"]),file = sys.stdout)
     return resources
