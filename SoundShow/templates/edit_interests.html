@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+{% for cat in selections %}
+    {{cat}}<br>
+    {% for cont in selections[cat] %}
+        {{cont}} <a href = "{{url_for('add_interest', user_name = user_name, interest_name = cont)}}">Add interest</a>
+        <br>
+    {% endfor%}
+    <br>
+{% endfor %}
+<a href="{{url_for('user_home',curr_uuid = curr_uuid)}}">Go back home</a><br>
+<a href = "{{url_for('profile',curr_uuid = curr_uuid)}}">Go to Profile</a><br>
+<a href="{{url_for('logout')}}"> Logout </a>
+</body>
+</html>

@@ -27,19 +27,19 @@ USER_INTERESTS = "CREATE TABLE IF NOT EXISTS user_interests(\
                 FOREIGN KEY (user_name, uuid) REFERENCES user(user_name, uuid) \
                 ON DELETE CASCADE);"
 
-USER_SEARCH_HISTORY =  "CREATE TABLE IF NOT EXISTS user_search_history(\
+USER_SEARCH_HISTORY = "CREATE TABLE IF NOT EXISTS user_search_history(\
                         user_name VARCHAR(20) NOT NULL, \
                         search_term VARCHAR(40) NOT NULL, \
                         searched_at TIMESTAMP NOT NULL,\
                         FOREIGN KEY(user_name) REFERENCES user(user_name) \
                         ON DELETE CASCADE);"
 
-NUM_INTERESTED_VIEW =   "CREATE VIEW Num_Interested AS \
+NUM_INTERESTED_VIEW = "CREATE VIEW Num_Interested AS \
                         SELECT category_name, SUM(num_interested) AS amount \
                         FROM content GROUP BY(category_name) ORDER BY amount DESC;"
 
 
-USER_FAVORITES =  "CREATE TABLE IF NOT EXISTS user_favorites( \
+USER_FAVORITES = "CREATE TABLE IF NOT EXISTS user_favorites( \
                 user_name VARCHAR(20) NOT NULL, \
                 title VARCHAR(50) NOT NULL, \
                 url TEXT NOT NULL, \

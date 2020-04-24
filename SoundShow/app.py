@@ -99,7 +99,36 @@ def clear_history():
     execute_query(querys.CLEAR_SEARCH_HISTORY, None, (session["username"]))
     return redirect(url_for("profile", curr_uuid = session["uuid"]))
 
+@login_required
+@sound_show.route("/delete_interest/<user_name>/<interest_name>")
+def delete_interest(user_name, interest_name):
+    # after we delete an interest we would just reload the profile page
+    execute_query(querys.DELETE_USER_INTEREST, None, (session["username"],interest_name))
+    execute_query(querys.DECREASE_CONTENT_COUNT, None, interest_name)
+    return redirect(url_for("profile", curr_uuid = session["uuid"]))
 
+@login_required
+@sound_show.route("/edit_interests/<user_name>")
+def edit_interests(user_name):
+    interests = execute_query(querys.GET_USERS_INTERESTS, "all", (session["username"]))
+    users_interests = set()
+    for row in interests:
+        users_interests.add(row["content_name"])
+    selections = {}
+    for elem in variables.CATEGORIES:
+        if elem not in selections:
+            selections[elem] = []
+        for item in variables.CONTENT[elem]:
+            if item not in users_interests:
+                selections[elem].append(item)
+    return render_template("edit_interests.html",curr_uuid = session["uuid"], user_name = user_name, selections = selections)
+
+@login_required
+@sound_show.route("/add_interest/<user_name>/<interest_name>")
+def add_interest(user_name, interest_name):
+    execute_query(querys.ADD_INTEREST, None, (user_name, session["uuid"], interest_name))
+    execute_query(querys.INCREASE_CONTENT_COUNT, None, (interest_name))
+    return redirect(url_for("edit_interests", user_name = user_name))
 
 @login_required
 def jsonify_curr_user():
@@ -259,7 +288,7 @@ def populate_home_page():
         # dictionaries, where the value of each dictionary
         # is one of the users interests
         querys.GET_USERS_INTERESTS, "all", session["username"])
-    result = None
+    result = {}
     interests = []  # this where we will populate those values
     if len(users_interests) == 0:  # if the user had not selected any intial interests
         # then we select the default_interests from the database,
@@ -280,6 +309,7 @@ def populate_home_page():
             result["google_search"] = pre_loaded_google_data()
             result["spotify_search"] = pre_loaded_spotify_data()
             result["youtube_search"] = pre_loaded_youtube_data()
+            print(result, file = sys.stdout)
             return result
     # we repeat the same steps if the user has selected initial interests
     for obj in users_interests:
@@ -292,9 +322,11 @@ def populate_home_page():
         result["google_search"] = pre_loaded_google_data()
         result["spotify_search"] = pre_loaded_spotify_data()
         result["youtube_search"] = pre_loaded_youtube_data()
+        print(result, file = sys.stdout)
         return result
     result["google_search"] = pre_loaded_google_data()
     result["youtube_search"] = pre_loaded_youtube_data()
+    print(result, file = sys.stdout)
     return result
 
 

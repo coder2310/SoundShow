@@ -19,10 +19,13 @@
     <br />
     <p>Joined: {{data["joined"]}}</p>
     <br />
+    <p>Interests</p>
     {% if data["interests"] %}
-    <p>Interests: {{data["interests"] }}</p>
+    {% for inter in data["interests"] %}
+      <p>{{inter}}</p> <a href = "{{url_for('delete_interest', user_name = data['username'], interest_name = inter)}}">Delete Interest</a>
+    {% endfor %}
     {% endif %} {% if not data["interests"] %}
-    <p>Interests: No interests selected</p>
+    <p> No interests selected</p>
     {% endif %}
     <br />
     {% if data["search_history"] == [] %}
@@ -34,13 +37,8 @@
     {% endfor %}
     {% endif %}
     <a href="{{url_for('clear_history')}}">Clear History</a>
-    <!-- {% if data["search_history"] %}
-        <p>Search History: {{data["search history"]}}</p>
-    {% endif %} {% if not data["search_history"] %}
-        <p>Search History: No search history</p>
-    {% endif %} -->
     <br>
-    
+    <a href = "{{url_for('edit_interests', user_name = data['username'])}}">Add interests</a><br>
     <a href="{{url_for('user_home',curr_uuid = curr_uuid)}}">Go back home</a>
   </body>
 </html>

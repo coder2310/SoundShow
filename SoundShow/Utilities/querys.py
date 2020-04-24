@@ -43,3 +43,7 @@ GET_TOP_TEN_CATEGORIES = "SELECT DISTINCT category_name FROM content NATURAL JOI
                         as T2 LIMIT 10;"
 
 CLEAR_SEARCH_HISTORY = "DELETE FROM user_search_history WHERE user_name =%s;"
+
+DELETE_USER_INTEREST = "DELETE FROM user_interests \
+                        WHERE user_name = %s AND \
+                        content_name = %s;"
