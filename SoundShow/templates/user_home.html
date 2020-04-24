@@ -6,7 +6,8 @@
     <title>Welcome back {{user_name}}</title>
   </head>
   <body>
-    <a href = "{{url_for('profile',curr_uuid = curr_uuid)}}">Go to Profile</a>
+    <a href = "{{url_for('profile',curr_uuid = curr_uuid)}}">Go to Profile</a><br>
+    <a href = "{{url_for('logout')}}"> Logout </a>
     <form action = "/custom_search" method = "post">
       <input type="text" name = "search_term" placeholder="Search">
       <button type ="submit">Search</button>

@@ -1,22 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{data["name"]}}'s Profile</title>
+  </head>
+  <form action = "/custom_search" method = "post">
+    <input type="text" name = "search_term" placeholder="Search">
+    <button type ="submit">Search</button>
+  </form>
+  <a href="{{url_for('logout')}}"> Logout </a>
+  <body>
     <p>Name: {{data["name"]}}</p>
-    <br>
+    <br />
     <p>username: {{data["username"]}}</p>
-    <br>
+    <br />
     <p>UUID: {{data["userID"]}}</p>
-    <br>
+    <br />
     <p>Joined: {{data["joined"]}}</p>
-    <br>
+    <br />
+    {% if data["interests"] %}
     <p>Interests: {{data["interests"] }}</p>
+    {% endif %} {% if not data["interests"] %}
+    <p>Interests: No interests selected</p>
+    {% endif %}
+    <br />
+    {% if data["search_history"] == [] %}
+      <p>Search History: No search history</p>
+    {% endif %}
+    {% if data["search_history"] != [] %}
+    {% for entry in data["search_history"] %}
+        <p>{{entry["search_term"]}} search at {{entry["searched_at"]}}</p><br>
+    {% endfor %}
+    {% endif %}
+    <a href="{{url_for('clear_history')}}">Clear History</a>
+    <!-- {% if data["search_history"] %}
+        <p>Search History: {{data["search history"]}}</p>
+    {% endif %} {% if not data["search_history"] %}
+        <p>Search History: No search history</p>
+    {% endif %} -->
     <br>
-    <p>Search History: {{data["search history"]}}</p>
-    <a href = "{{url_for('user_home',curr_uuid = curr_uuid)}}">Go back home</a>
-</body>
+    
+    <a href="{{url_for('user_home',curr_uuid = curr_uuid)}}">Go back home</a>
+  </body>
 </html>

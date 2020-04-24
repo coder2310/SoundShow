@@ -34,3 +34,12 @@ GET_USERS_INTERESTS = "SELECT content_name FROM user_interests WHERE user_name =
 INSERT_INTO_HISTORY = "INSERT INTO user_search_history (user_name, search_term, searched_at) \
                     VALUES(%s, %s, %s);"
 GET_USER_SEARCH_HISTORY = "SELECT search_term, searched_at FROM user_search_history WHERE user_name = %s;"
+USER_SESSION_CATEGORIES = "SELECT DISTINCT category_name FROM content NATURAL JOIN \
+                    (SELECT content_name FROM \
+                    user_interests WHERE user_name = %s) as T2;"
+
+GET_TOP_TEN_CATEGORIES = "SELECT DISTINCT category_name FROM content NATURAL JOIN \
+                        (SELECT user_interests.content_name FROM user_interests) \
+                        as T2 LIMIT 10;"
+
+CLEAR_SEARCH_HISTORY = "DELETE FROM user_search_history WHERE user_name =%s;"

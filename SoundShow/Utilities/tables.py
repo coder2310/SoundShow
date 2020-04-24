@@ -31,13 +31,13 @@ USER_SEARCH_HISTORY =  "CREATE TABLE IF NOT EXISTS user_search_history(\
                         user_name VARCHAR(20) NOT NULL, \
                         search_term VARCHAR(40) NOT NULL, \
                         searched_at TIMESTAMP NOT NULL,\
-                        PRIMARY KEY(user_name),\
                         FOREIGN KEY(user_name) REFERENCES user(user_name) \
                         ON DELETE CASCADE);"
 
-NUM_INTERESTED_VIEW = "CREATE VIEW Num_Interested AS \
+NUM_INTERESTED_VIEW =   "CREATE VIEW Num_Interested AS \
                         SELECT category_name, SUM(num_interested) AS amount \
                         FROM content GROUP BY(category_name) ORDER BY amount DESC;"
+
 
 USER_FAVORITES =  "CREATE TABLE IF NOT EXISTS user_favorites( \
                 user_name VARCHAR(20) NOT NULL, \

@@ -6,7 +6,7 @@ import sys
 # import Engine.searchGoogle
 # import Engine.searchSpotify
 # import Engine.searchGoogle
-from Engine import searchGoogle, searchYoutube, searchSpotify
+from Engine import searchGoogle, searchSpotify
 
 def g_interests(lst_interests):
     # each API now has its own function
@@ -40,29 +40,29 @@ def g_interests_thread(lst_interests):
         content.extend(res)
     return "google_search", content
 
-def y_interests_thread(lst_interests):
-    deq = deque()
-    content = []
-    thread_list = []
-    for elem in lst_interests:
-        new_thread = Thread(target=lambda q, elem: q.append(searchYoutube.extract_data(elem)),
-                            args=(deq, elem))
-        new_thread.start()
-        thread_list.append(new_thread)
-    for thread in thread_list:
-        thread.join()
-    while len(deq) > 0:
-        res = deq.popleft()
-        content.extend(res)
-    return "youtube_search", content
+# def y_interests_thread(lst_interests):
+#     deq = deque()
+#     content = []
+#     thread_list = []
+#     for elem in lst_interests:
+#         new_thread = Thread(target=lambda q, elem: q.append(searchYoutube.extract_data(elem)),
+#                             args=(deq, elem))
+#         new_thread.start()
+#         thread_list.append(new_thread)
+#     for thread in thread_list:
+#         thread.join()
+#     while len(deq) > 0:
+#         res = deq.popleft()
+#         content.extend(res)
+#     return "youtube_search", content
 
 
 
-def y_interests(lst_interests):
-    content = []
-    for elem in lst_interests:
-        content.extend(searchYoutube.extract_data(elem))
-    return "youtube_search", content
+# def y_interests(lst_interests):
+#     content = []
+#     for elem in lst_interests:
+#         content.extend(searchYoutube.extract_data(elem))
+#     return "youtube_search", content
 
 
 def s_interests(lst_interests):

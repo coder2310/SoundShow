@@ -55,7 +55,7 @@ def retrieve_top_categories(rows=10):
     return execute_query(querys.RETRIEVE_TOP_CONTENT, "all", rows)
 
 
-def run_sound_show(clear_users=False, reset_media=False, rebuild_tables = False):
+def run_sound_show(clear_users=False, reset_media=False, rebuild_tables=False):
     if clear_users:
         # since its a forign key constrain
         execute_query("DELETE FROM user_interests;")
@@ -93,33 +93,45 @@ def recreate_tables():
     except:
         pass
 
+@login_required
+@sound_show.route("/clear_history")
+def clear_history():
+    execute_query(querys.CLEAR_SEARCH_HISTORY, None, (session["username"]))
+    return redirect(url_for("profile", curr_uuid = session["uuid"]))
+
+
 
 @login_required
 def jsonify_curr_user():
     result = {
         "name": None,
         "username": session["username"],
-        "userID" : session["uuid"],
-        "joined" : None,
+        "userID": session["uuid"],
+        "joined": None,
         "interests": [],
-        "search history" : []
+        "search_history": []
     }
     # name_query = execute_query(querys.GET_FULL_NAME, "one", (session["username"]))
     # full_name = name_query["first_name"] + " " + name_query["last_name"]
-    # joined_query = 
-    print(session["username"], file = sys.stdout)
-    user_query = execute_query(querys.GET_INFO_USING_USERNAME, "one", (session["username"]))
-    print("Results:", user_query, file = sys.stdout)
+    # joined_query =
+    print(session["username"], file=sys.stdout)
+    user_query = execute_query(
+        querys.GET_INFO_USING_USERNAME, "one", (session["username"]))
+    print("Results:", user_query, file=sys.stdout)
     result["name"] = user_query["first_name"] + " " + user_query["last_name"]
     result["joined"] = str(user_query["joined"])
-    user_interests = execute_query(querys.GET_USERS_INTERESTS, "all", (session["username"]))
+    user_interests = execute_query(
+        querys.GET_USERS_INTERESTS, "all", (session["username"]))
     for rows in user_interests:
         result["interests"].append(rows["content_name"])
-    search_history = execute_query(querys.GET_USER_SEARCH_HISTORY, "all", (session["username"]))
+    search_history = execute_query(
+        querys.GET_USER_SEARCH_HISTORY, "all", (session["username"]))
+    print(search_history, file = sys.stdout)
     for rows in search_history:
-        result["search history"].append(rows)
+        rows["searched_at"] = str(rows["searched_at"])
+        result["search_history"].append(rows)
+    print(result, file = sys.stdout)
     return result
-
 
 
 # made it function so when we fix up our file structure
@@ -164,8 +176,8 @@ def search_results(curr_uuid, search_term):
     # resources = ThreadEngine(search_term)
     # print(search_term[0], file = sys.stdout)
     return render_template("search_results.html",
-    curr_uuid=session["uuid"],search_term=search_term,
-    data=ThreadEngine.retrieve_content([search_term]))
+                        curr_uuid=session["uuid"], search_term=search_term,
+                        data=ThreadEngine.retrieve_content([search_term]))
 
 
 @login_required
@@ -176,7 +188,7 @@ def add_content(curr_uuid, name):
 
 
 @login_required
-@sound_show.route("/custom_search", methods = ["POST"])
+@sound_show.route("/custom_search", methods=["POST"])
 def custom_search():
     if request.form:
         search_term = request.form["search_term"]
@@ -184,11 +196,19 @@ def custom_search():
             # we insert into the user's search hisotry
             # user_name, search_term, timestamp
             searched_at = time.strftime('%Y-%m-%d %H:%M:%S')
-            execute_query(querys.INSER_INTO_HISTORY, None, (session["username"], search_term, searched_at))
-            return redirect(url_for('search_results', 
-                curr_uuid = session["uuid"], 
-                search_term=search_term))
+            execute_query(querys.INSERT_INTO_HISTORY, None,
+                        (session["username"], search_term, searched_at))
+            return redirect(url_for('search_results',
+                                    curr_uuid=session["uuid"],
+                                    search_term=search_term))
         return render_template("user_home.html", user_name=session["username"], data=populate_home_page())
+
+
+@login_required
+@sound_show.route("/logout", methods=["GET"])
+def logout():
+    session.clear()
+    return redirect("/")
 
 
 @login_required
@@ -268,39 +288,62 @@ def populate_home_page():
     # threading Engine and return the results
     #print(session["categories"], file = sys.stdout)
     if "Music Genres" in session["categories"]:
-            result = ThreadEngine.retrieve_content(interests, has_spot=True)
-            result["google_search"] = pre_loaded_google_data()
-            result["spotify_search"] = pre_loaded_spotify_data()
-            result["youtube_search"] = pre_loaded_youtube_data()
-            return result
+        result = ThreadEngine.retrieve_content(interests, has_spot=True)
+        result["google_search"] = pre_loaded_google_data()
+        result["spotify_search"] = pre_loaded_spotify_data()
+        result["youtube_search"] = pre_loaded_youtube_data()
+        return result
     result["google_search"] = pre_loaded_google_data()
     result["youtube_search"] = pre_loaded_youtube_data()
     return result
-    
+
+
 def pre_loaded_spotify_data():
     with open("spot.json", "r+") as spot:
         results = json.load(spot)
         return results
+
+
 def pre_loaded_youtube_data():
     with open("tube.json", "r+") as tube:
         results = json.load(tube)
         return results
+
+
 def pre_loaded_google_data():
     with open("google.json", "r+") as goog:
         results = json.load(goog)
         return results
+
+
 @login_required
 @sound_show.route("/user_home/<curr_uuid>")
 def user_home(curr_uuid):
     '''If the user hasnt selected any content yet, we automatticaly pick the top
     10 and display it with out storing it in the users interests, other wise we display
     everything the user is interested in. Populate home page retrieves the data we need'''
-    return render_template("user_home.html", curr_uuid = session["uuid"], user_name=session["username"], data=populate_home_page())
+    return render_template("user_home.html", curr_uuid=session["uuid"], user_name=session["username"], data=populate_home_page())
 
 
 @sound_show.route("/register", methods=["GET"])
 def register():
     return render_template("register.html")
+
+
+@login_required
+def get_users_categories():
+    categor_query = execute_query(
+        querys.USER_SESSION_CATEGORIES, "all", (session["username"]))
+    catergor_set = []
+    if categor_query:
+        for row in categor_query:
+            catergor_set.append(row["category_name"])
+    else:
+        categor_query = execute_query(
+            querys.GET_TOP_TEN_CATEGORIES, "all", None)
+        for row in categor_query:
+            catergor_set.append(row["category_name"])
+    return catergor_set
 
 
 @sound_show.route("/login_auth", methods=["POST"])
@@ -316,6 +359,7 @@ def login_auth():
             session["username"] = user_name
             session["uuid"] = execute_query(
                 querys.GET_UUID, "one", user_name)["uuid"]
+            session["categories"] = get_users_categories()
             return redirect(url_for("user_home", curr_uuid=session["uuid"]))
         error = "Username or password does not match our records"
         return render_template("login.html", error=error)
@@ -372,7 +416,9 @@ def add_user_content():
 @sound_show.route("/profile/<curr_uuid>")
 def profile(curr_uuid):
     '''Render the profile of the user with all the data needed'''
-    return render_template("profile.html", curr_uuid=curr_uuid, user_name=session["username"],data=jsonify_curr_user())
+    return render_template("profile.html",
+                        curr_uuid=curr_uuid,
+                        user_name=session["username"], data=jsonify_curr_user())
 
 
 if __name__ == "__main__":
@@ -385,7 +431,6 @@ if __name__ == "__main__":
     #     execute_query(tables.USER_INTERESTS)
     # except:
     #     pass
-    #execute_query(tables.USER_SEARCH_HISTORY)
-    
+    # execute_query(tables.USER_SEARCH_HISTORY)
 
     run_sound_show()
