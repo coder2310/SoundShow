@@ -82,6 +82,8 @@ def recreate_tables():
         execute_query(querys.DROP_TABLE.format("user_favorites"))
         execute_query(querys.DROP_TABLE.format("user_search_history"))
         execute_query(querys.DROP_VIEW.format("Num_Interested"))
+        execute_query(querys.DROP_TABLE.format("favorites"))
+        execute_query(querys.DROP_TABLE.format("user_favorites"))
         execute_query(tables.USER)
         execute_query(tables.CATEGORY)
         execute_query(tables.CONTENT)
@@ -89,6 +91,7 @@ def recreate_tables():
         execute_query(tables.USER_SEARCH_HISTORY)
         execute_query(tables.NUM_INTERESTED_VIEW)
         execute_query(tables.USER_FAVORITES)
+        execute_query(tables.FAVORITES)
 
     except:
         pass
