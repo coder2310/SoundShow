@@ -11,6 +11,7 @@
   </form>
   <a href="{{url_for('logout')}}"> Logout </a>
   <body>
+
     <p>Name: {{data["name"]}}</p>
     <br />
     <p>username: {{data["username"]}}</p>
@@ -22,12 +23,24 @@
     <p>Interests</p>
     {% if data["interests"] %}
     {% for inter in data["interests"] %}
-      <p>{{inter}}</p> <a href = "{{url_for('delete_interest', user_name = data['username'], interest_name = inter)}}">Delete Interest</a>
+      <p>{{inter}}</p><a href = "{{url_for('delete_interest', user_name = data['username'], interest_name = inter)}}">Delete Interest</a> <br>
     {% endfor %}
     {% endif %} {% if not data["interests"] %}
     <p> No interests selected</p>
     {% endif %}
     <br />
+    {% if data["favorites"] %}
+      <p>Your favorites</p>
+      {% for fav in data["favorites"] %}
+      <a href ={{fav["link"]}} target = "_blank"> {{fav["title"]}}</a> <a href = "{{url_for('delete_favorite', user_name = data['username'], hash_link = fav['hashed_link'])}}">Delete {{fav["title"]}}</a>
+      <br>
+      {% endfor %}
+      <a href = "{{url_for('delete_all_favorites', user_name = data['username'])}}">Delete all Favorites</a>
+    {% endif %}
+    {% if not data["favorites"] %}
+      <p>No favorites selected</p>
+    {% endif %}
+    <br>
     {% if data["search_history"] == [] %}
       <p>Search History: No search history</p>
     {% endif %}

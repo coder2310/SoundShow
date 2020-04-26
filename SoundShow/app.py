@@ -146,7 +146,9 @@ def jsonify_curr_user():
         "userID": session["uuid"],
         "joined": None,
         "interests": [],
+        "favorites": [],
         "search_history": []
+
     }
     # name_query = execute_query(querys.GET_FULL_NAME, "one", (session["username"]))
     # full_name = name_query["first_name"] + " " + name_query["last_name"]
@@ -167,11 +169,22 @@ def jsonify_curr_user():
     for rows in search_history:
         rows["searched_at"] = str(rows["searched_at"])
         result["search_history"].append(rows)
-
+    result["favorites"] = execute_query(querys.GET_USER_FAVORITES, "all", (session["username"]))
     return result
 
 
-# made it function so when we fix up our file structure
+@login_required
+@sound_show.route("/delete_favorite/<user_name>/<hash_link>")
+def delete_favorite(user_name,hash_link):
+    execute_query(querys.DELETE_USER_FAVORTE, None, (user_name, hash_link))
+    return redirect(url_for("profile", curr_uuid=session["uuid"]))
+
+@login_required
+@sound_show.route("/delete_all_favorites/<user_name>")
+def delete_all_favorites(user_name):
+    execute_query(querys.DELETE_ALL_FAVORITES, None, (user_name))
+    return redirect(url_for("profile", curr_uuid=session["uuid"]))
+
 
 
 @sound_show.route("/")

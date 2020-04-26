@@ -4,3 +4,4 @@ uuid
 google-api-python-client
 spotipy
 apiclient
+pyshorteners

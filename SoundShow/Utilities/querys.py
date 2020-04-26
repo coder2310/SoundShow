@@ -54,3 +54,8 @@ ADD_USER_FAVORITE = "INSERT INTO \
 
 ADD_LINK = "INSERT INTO favorites \
             (link, hashed_link) VALUES(%s, %s);"
+
+GET_USER_FAVORITES = "SELECT * FROM user_favorites NATURAL JOIN favorites WHERE user_name = %s;"
+
+DELETE_USER_FAVORTE = "DELETE FROM user_favorites WHERE user_name = %s AND hashed_link = %s;"
+DELETE_ALL_FAVORITES = "DELETE FROM user_favorites WHERE user_name = %s;"
