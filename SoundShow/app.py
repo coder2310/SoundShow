@@ -7,7 +7,7 @@ from functools import wraps
 import pymysql.cursors
 from Engine.ThreadAPIs import ThreadEngine
 from flask import (Flask, redirect, render_template, request, send_file,
-                session, url_for)
+                   session, url_for)
 
 
 from Utilities import querys, tables, utilities, variables
@@ -93,24 +93,29 @@ def recreate_tables():
     except:
         pass
 
+
 @login_required
 @sound_show.route("/clear_history")
 def clear_history():
     execute_query(querys.CLEAR_SEARCH_HISTORY, None, (session["username"]))
-    return redirect(url_for("profile", curr_uuid = session["uuid"]))
+    return redirect(url_for("profile", curr_uuid=session["uuid"]))
+
 
 @login_required
 @sound_show.route("/delete_interest/<user_name>/<interest_name>")
 def delete_interest(user_name, interest_name):
     # after we delete an interest we would just reload the profile page
-    execute_query(querys.DELETE_USER_INTEREST, None, (session["username"],interest_name))
+    execute_query(querys.DELETE_USER_INTEREST, None,
+                  (session["username"], interest_name))
     execute_query(querys.DECREASE_CONTENT_COUNT, None, interest_name)
-    return redirect(url_for("profile", curr_uuid = session["uuid"]))
+    return redirect(url_for("profile", curr_uuid=session["uuid"]))
+
 
 @login_required
 @sound_show.route("/edit_interests/<user_name>")
 def edit_interests(user_name):
-    interests = execute_query(querys.GET_USERS_INTERESTS, "all", (session["username"]))
+    interests = execute_query(
+        querys.GET_USERS_INTERESTS, "all", (session["username"]))
     users_interests = set()
     for row in interests:
         users_interests.add(row["content_name"])
@@ -121,14 +126,17 @@ def edit_interests(user_name):
         for item in variables.CONTENT[elem]:
             if item not in users_interests:
                 selections[elem].append(item)
-    return render_template("edit_interests.html",curr_uuid = session["uuid"], user_name = user_name, selections = selections)
+    return render_template("edit_interests.html", curr_uuid=session["uuid"], user_name=user_name, selections=selections)
+
 
 @login_required
 @sound_show.route("/add_interest/<user_name>/<interest_name>")
 def add_interest(user_name, interest_name):
-    execute_query(querys.ADD_INTEREST, None, (user_name, session["uuid"], interest_name))
+    execute_query(querys.ADD_INTEREST, None,
+                  (user_name, session["uuid"], interest_name))
     execute_query(querys.INCREASE_CONTENT_COUNT, None, (interest_name))
-    return redirect(url_for("edit_interests", user_name = user_name))
+    return redirect(url_for("edit_interests", user_name=user_name))
+
 
 @login_required
 def jsonify_curr_user():
@@ -143,10 +151,10 @@ def jsonify_curr_user():
     # name_query = execute_query(querys.GET_FULL_NAME, "one", (session["username"]))
     # full_name = name_query["first_name"] + " " + name_query["last_name"]
     # joined_query =
-    print(session["username"], file=sys.stdout)
+
     user_query = execute_query(
         querys.GET_INFO_USING_USERNAME, "one", (session["username"]))
-    print("Results:", user_query, file=sys.stdout)
+
     result["name"] = user_query["first_name"] + " " + user_query["last_name"]
     result["joined"] = str(user_query["joined"])
     user_interests = execute_query(
@@ -155,11 +163,11 @@ def jsonify_curr_user():
         result["interests"].append(rows["content_name"])
     search_history = execute_query(
         querys.GET_USER_SEARCH_HISTORY, "all", (session["username"]))
-    print(search_history, file = sys.stdout)
+
     for rows in search_history:
         rows["searched_at"] = str(rows["searched_at"])
         result["search_history"].append(rows)
-    print(result, file = sys.stdout)
+
     return result
 
 
@@ -188,7 +196,7 @@ def new_user(curr_uuid, name):
     # will focus on UX later and better routing later just want basic
     # functionality first
     return render_template("new_user.html", curr_uuid=curr_uuid,
-                        user_name=session["username"], name=name)
+                           user_name=session["username"], name=name)
 
 
 @login_required
@@ -196,7 +204,7 @@ def new_user(curr_uuid, name):
 def insert_categories(curr_uuid, name):
     categor = variables.CATEGORIES
     return render_template("insert_categories.html", curr_uuid=curr_uuid,
-                        user_name=session["username"], name=name, categor=categor)
+                           user_name=session["username"], name=name, categor=categor)
 
 
 @login_required
@@ -205,15 +213,15 @@ def search_results(curr_uuid, search_term):
     # resources = ThreadEngine(search_term)
     # print(search_term[0], file = sys.stdout)
     return render_template("search_results.html",
-                        curr_uuid=session["uuid"], search_term=search_term,
-                        data=ThreadEngine.retrieve_content([search_term]))
+                           curr_uuid=session["uuid"], search_term=search_term,
+                           data=ThreadEngine.retrieve_content([search_term]))
 
 
 @login_required
 @sound_show.route("/add_content/<curr_uuid>/<name>")
 def add_content(curr_uuid, name):
     return render_template("content.html", curr_uuid=curr_uuid, user_name=session["username"],
-                        name=name, categories=retrieve_intial_content())
+                           name=name, categories=retrieve_intial_content())
 
 
 @login_required
@@ -226,7 +234,7 @@ def custom_search():
             # user_name, search_term, timestamp
             searched_at = time.strftime('%Y-%m-%d %H:%M:%S')
             execute_query(querys.INSERT_INTO_HISTORY, None,
-                        (session["username"], search_term, searched_at))
+                          (session["username"], search_term, searched_at))
             return redirect(url_for('search_results',
                                     curr_uuid=session["uuid"],
                                     search_term=search_term))
@@ -283,6 +291,36 @@ def info():
 
 
 @login_required
+def store_google_results(google_data):
+    for entry in google_data:
+        try:
+            execute_query(querys.ADD_LINK, None,
+                        (entry["url"], entry["hash_link"]))
+        except:
+            pass
+
+@login_required
+def store_youtube_results(youtube_data):
+    for entry in youtube_data:
+        try:
+            if entry["link"] != None:
+                execute_query(querys.ADD_LINK, None,
+                            (entry["link"], entry["hash_link"]))
+        except:
+            pass
+
+
+@login_required
+def store_spotify_results(spotify_data):
+    for entry in spotify_data:
+        try:
+            execute_query(querys.ADD_LINK, None,
+                        (entry["link"], entry["hash_link"]))
+        except:
+            pass
+
+
+@login_required
 def populate_home_page():
     users_interests = execute_query(  # this query returns a list of
         # dictionaries, where the value of each dictionary
@@ -309,43 +347,60 @@ def populate_home_page():
             result["google_search"] = pre_loaded_google_data()
             result["spotify_search"] = pre_loaded_spotify_data()
             result["youtube_search"] = pre_loaded_youtube_data()
-            print(result, file = sys.stdout)
+            store_google_results(result["google_search"])
+            store_spotify_results(result["spotify_search"])
+            store_youtube_results(result["youtube_search"])
             return result
     # we repeat the same steps if the user has selected initial interests
+    session["categories"] = get_users_categories()
+    print("Session:", session["categories"], file=open("dump.txt", "a+"))
     for obj in users_interests:
         interests.extend(obj.values())
     # if they did select interests we add pass that along to the
     # threading Engine and return the results
     #print(session["categories"], file = sys.stdout)
+    session["categories"] = get_users_categories()
+
+    #print("Session1: ", session["categories"], file = sys.stdout)
     if "Music Genres" in session["categories"]:
         result = ThreadEngine.retrieve_content(interests, has_spot=True)
         result["google_search"] = pre_loaded_google_data()
         result["spotify_search"] = pre_loaded_spotify_data()
         result["youtube_search"] = pre_loaded_youtube_data()
-        print(result, file = sys.stdout)
+        store_google_results(result["google_search"])
+        store_spotify_results(result["spotify_search"])
+        store_youtube_results(result["youtube_search"])
         return result
     result["google_search"] = pre_loaded_google_data()
     result["youtube_search"] = pre_loaded_youtube_data()
-    print(result, file = sys.stdout)
+    store_youtube_results(result["youtube_search"])
+    store_google_results(result["google_search"])
     return result
 
 
 def pre_loaded_spotify_data():
-    with open("spot.json", "r+") as spot:
+    with open("new_spot.json", "r+") as spot:
         results = json.load(spot)
         return results
 
 
 def pre_loaded_youtube_data():
-    with open("tube.json", "r+") as tube:
+    with open("new_tube.json", "r+") as tube:
         results = json.load(tube)
         return results
 
 
 def pre_loaded_google_data():
-    with open("google.json", "r+") as goog:
+    with open("new_google.json", "r+") as goog:
         results = json.load(goog)
         return results
+
+
+@login_required
+@sound_show.route("/add_favorite/<user_name>/<title>/<hash_link>")
+def add_favorite(user_name, title, hash_link):
+    execute_query(querys.ADD_USER_FAVORITE, None, (user_name, title, hash_link))
+    return redirect(url_for("user_home", curr_uuid=session["uuid"]))
 
 
 @login_required
@@ -354,7 +409,10 @@ def user_home(curr_uuid):
     '''If the user hasnt selected any content yet, we automatticaly pick the top
     10 and display it with out storing it in the users interests, other wise we display
     everything the user is interested in. Populate home page retrieves the data we need'''
-    return render_template("user_home.html", curr_uuid=session["uuid"], user_name=session["username"], data=populate_home_page())
+    return render_template("user_home.html",
+                           curr_uuid=session["uuid"],
+                           user_name=session["username"],
+                           data=populate_home_page())
 
 
 @sound_show.route("/register", methods=["GET"])
@@ -384,7 +442,7 @@ def login_auth():
     if request.form:
         login_form = request.form
         user_name = request.form["user_name"]
-        pass_word = utilities.hash_password(login_form["pass_word"])
+        pass_word = utilities.hash_string(login_form["pass_word"])
         exists = execute_query(
             querys.AUTH_LOGIN, "one", (user_name, pass_word))
         if exists:
@@ -414,13 +472,13 @@ def reg_auth():
         if not utilities.valid_password(pass_word):
             error = "Password does not satify requirments"
             return render_template("register.html", error=error)
-        pass_word = utilities.hash_password(register_form["pass_word"])
+        pass_word = utilities.hash_string(register_form["pass_word"])
         first_name = register_form["first_name"]
         last_name = register_form["last_name"]
         user_uuid = str(uuid.uuid4())
         joined = time.strftime('%Y-%m-%d %H:%M:%S')
         fields = (first_name, last_name, user_name,
-                pass_word,  user_uuid, joined)
+                  pass_word,  user_uuid, joined)
         # will make a password strength checker later
         execute_query(querys.INSERT_USER, None, fields)
         session["username"] = user_name
@@ -438,7 +496,7 @@ def add_user_content():
                 selected = bool(request.form.getlist(conts))
                 if selected:
                     execute_query(querys.ADD_INTEREST, None,
-                                (session["username"], session["uuid"], conts))
+                                  (session["username"], session["uuid"], conts))
                     execute_query(querys.INCREASE_CONTENT_COUNT, None, conts)
                     # now we have to add this to the database
         return redirect(url_for("user_home", curr_uuid=session["uuid"]))
@@ -449,8 +507,8 @@ def add_user_content():
 def profile(curr_uuid):
     '''Render the profile of the user with all the data needed'''
     return render_template("profile.html",
-                        curr_uuid=curr_uuid,
-                        user_name=session["username"], data=jsonify_curr_user())
+                           curr_uuid=curr_uuid,
+                           user_name=session["username"], data=jsonify_curr_user())
 
 
 if __name__ == "__main__":

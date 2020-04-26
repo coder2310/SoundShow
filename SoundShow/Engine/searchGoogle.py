@@ -1,20 +1,21 @@
-API_KEY = 'c960fb6217584e66b72bf22ad257a3db'
-import json
-import requests
+from Utilities import utilities
 from datetime import datetime, timedelta
+import requests
+import json
+API_KEY = 'c960fb6217584e66b72bf22ad257a3db'
 
 
 def process_response(url):
-    #keys we care about 
-    #status code - needs to be ok
-    # totalResults - tells us how many results were retrieved. 
+    # keys we care about
+    # status code - needs to be ok
+    # totalResults - tells us how many results were retrieved.
     # will decide later if we want to use it all
     # articles - list of objects which we will parse from
-    #source[name]
-    #title
-    #description - only get the first hundred character followed by ...
-    #url - might want to use  url_shortner for both urls
-    #url_to_image
+    # source[name]
+    # title
+    # description - only get the first hundred character followed by ...
+    # url - might want to use  url_shortner for both urls
+    # url_to_image
     response = requests.get(url)
     content = response.json()
     data = []
@@ -22,62 +23,76 @@ def process_response(url):
         for results in content['articles']:
             # print(type(results))
             entry = {
-                'source' : None,
-                'title' : None,
+                'source': None,
+                'title': None,
                 'description': None,
                 'url': None,
+                'hashed_url': None,
                 'img_url': None
             }
+            encoded_link = utilities.shorten_hash_link(results['url'])
             entry['source'] = results['source']['name']
             entry['title'] = results['title']
             if results['description']:
                 entry['description'] = results['description'][0:100] + '...'
             else:
                 entry['description'] = "No description"
-            entry['url'] = results['url']
+            entry['url'] = encoded_link[0]
+            entry['hashed_url'] = encoded_link[1]
             entry['img_url'] = results['urlToImage']
             data.append(entry)
     return data
 
+
 def get_all_trending():
-    url = 'http://newsapi.org/v2/top-headlines?country=us&apiKey={}'.format(API_KEY)
+    url = 'http://newsapi.org/v2/top-headlines?country=us&apiKey={}'.format(
+        API_KEY)
     return process_response(url)
+
 
 def get_trending_by_category(category):
     category = category.replace(' ', '+')
-    url = 'http://newsapi.org/v2/top-headlines?country=us&category={}&apiKey={}'.format(category, API_KEY)
+    url = 'http://newsapi.org/v2/top-headlines?country=us&category={}&apiKey={}'.format(
+        category, API_KEY)
     return process_response(url)
 
 
 def get_trending_topic(topic):
     topic = topic.replace(' ', '+')
-    url = 'http://newsapi.org/v2/top-headlines?q={}&apiKey={}'.format(topic, API_KEY)
+    url = 'http://newsapi.org/v2/top-headlines?q={}&apiKey={}'.format(
+        topic, API_KEY)
     return process_response(url)
 
+
 def get_trending_category_topic(category, topic):
-    category, topic = category.replace(' ', '+') , topic.replace(' ', '+')
-    url = 'http://newsapi.org/v2/top-headlines?category={}&q={}&apiKey={}'.format(category,topic, API_KEY)
+    category, topic = category.replace(' ', '+'), topic.replace(' ', '+')
+    url = 'http://newsapi.org/v2/top-headlines?category={}&q={}&apiKey={}'.format(
+        category, topic, API_KEY)
     return process_response(url)
+
 
 def get_all_articles(topic):
     topic = topic.replace(' ', '+')
-    url = 'https://newsapi.org/v2/everything?q={}&apiKey={}'.format(topic, API_KEY)
+    url = 'https://newsapi.org/v2/everything?q={}&apiKey={}'.format(
+        topic, API_KEY)
     return process_response(url)
+
 
 def get_recent_articles(topic):
     topic = topic.replace(' ', '+')
     today = datetime.now()
-    three_days_ago = today - timedelta(days = 3)
-    today, three_days_ago = str(datetime.date(today)), str(datetime.date(three_days_ago))
+    three_days_ago = today - timedelta(days=3)
+    today, three_days_ago = str(datetime.date(today)), str(
+        datetime.date(three_days_ago))
     url = 'https://newsapi.org/v2/everything?q={}&from={}&to={}&sortBy=popularity&apiKey={}'
-    url = url.format(topic,three_days_ago, today,API_KEY)
+    url = url.format(topic, three_days_ago, today, API_KEY)
     result = process_response(url)
     with open("google.json", "w+") as goog:
         json.dump(result, goog)
     return result
 
+
 def process_users_interests(interests):
     # we will experiment with what functions to use  here but get_recent_articles
     # seems to yeild the most useful results
     return {topic: get_recent_articles(topic) for topic in interests}
-

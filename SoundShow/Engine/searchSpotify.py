@@ -4,6 +4,7 @@ import spotipy.util as util
 from spotipy.oauth2 import SpotifyClientCredentials
 import re
 import json
+from Utilities import utilities
 CLIENT_ID = '472db3710d084b36926341acefd1311e'
 CLIENT_SECRET = '8dd4c8534b69424681c137b8af0dd2cb'
 USER = '31h25u3gvkjfkgctbsb4hv5mdb4i?si=QmrACCNSS7qa927dwUICTA'
@@ -131,13 +132,16 @@ def artistForGenres(genres):
         artists_format = {
         "artist" : None,
         "link" : None,
+        "hashed_link": None,
         "albums": None,
         "img_link": None,
         "uri" : None,
         "top_tracks": None
         }
+        encoded_artist_link = utilities.hash_string(elem["album"]["artists"][0]["external_urls"]["spotify"])
         artists_format["artist"] = elem["album"]["artists"][0]["name"]
-        artists_format["link"] = elem["album"]["artists"][0]["external_urls"]["spotify"]
+        artists_format["link"] =   encoded_artist_link[0]
+        artists_format["hash_link"] = encoded_artist_link[1]
         artists_format["uri"] =  elem["album"]["artists"][0]["uri"]
         artists_format["img_link"] = artistImage(artists_format["artist"])
         artists_format["albums"] = get_album_names(artists_format["uri"])
@@ -151,8 +155,8 @@ def artistForGenres(genres):
 
         # if not has_none:
         artists.append(artists_format)
-        count += 1
-        if count > 10:
+        # count += 1
+        if len(artists)> 10:
             break
     return artists
 

@@ -42,7 +42,12 @@ NUM_INTERESTED_VIEW = "CREATE VIEW Num_Interested AS \
 USER_FAVORITES = "CREATE TABLE IF NOT EXISTS user_favorites( \
                 user_name VARCHAR(20) NOT NULL, \
                 title VARCHAR(50) NOT NULL, \
-                url TEXT NOT NULL, \
-                PRIMARY KEY (user_name, url(1000)),\
+                hashed_link VARCHAR(256) NOT NULL, \
+                PRIMARY KEY (user_name, hashed_link),\
                 FOREIGN KEY(user_name) REFERENCES user(user_name) \
                 ON DELETE CASCADE);"
+
+FAVORITES =    "CREATE TABLE IF NOT EXISTS favorites( \
+                link varchar(50) NOT NULL, \
+                hashed_link VARCHAR(256) NOT NULL,\
+                PRIMARY KEY(hashed_link));"

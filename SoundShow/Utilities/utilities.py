@@ -3,12 +3,18 @@
 import hashlib
 import os
 import string
+import pyshorteners
 
 
-def hash_password(password):
+def hash_string(password):
     '''return sha256 hash of password'''
     return hashlib.sha256(password.encode("utf-8")).hexdigest()
 
+def shorten_hash_link(link):
+    '''will return a shortened version of the url, along with the hash'''
+    shortener  = pyshorteners.Shortener()
+    short_url = shortener.tinyurl.short(link)
+    return short_url, hash_string(short_url)
 
 def valid_username(user_name):
     '''Each username should be at least 6 characters long, will convert

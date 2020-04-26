@@ -16,9 +16,13 @@
     <h1>Google Search Results</h1>
     {%set google = data["google_search"]%} 
     {% for items in google %}
-    <b>
-      <p>Source: {{items["source"]}}</p>
-    </b>
+    <br>
+    <a href = "{{url_for('add_favorite', user_name = user_name, title = items['title'] ,hash_link = items['hash_link'])}}">
+      Add {{items["title"]}} to favorites
+    </a>
+    <br>
+      <p>Source: {{items["source"]}}</p> 
+    </br>
     <br />
     <b>
       <p>Title: {{items["title"]}}</p>
@@ -32,11 +36,14 @@
     <h2>Youtube Search Results</h2>
     {% set youtube = data["youtube_search"]%}
       {% for items in youtube %}
+      <a href = "{{url_for('add_favorite', user_name = user_name, title = items['title'], hash_link = items['hash_link'])}}">
+        Add {{items["title"]}} to favorites
+      </a>
         <p>Title: {{items["title"]}}</p>
         <br>
         <p>Description:{{items["description"]}}</p>
         <br>
-        <a href={{ items["url"] }} target = "_blank">Link</a>
+        <a href={{ items["link"] }} target = "_blank">Link</a>
         <img src = {{ items["image"] }}>
         <br>
         <p>Channel: {{items["channel"]}}</p>
@@ -46,6 +53,9 @@
     <h2>Spotify Search Data</h2>
     {% set spotify = data["spotify_search"] %}
       {% for items in spotify %}
+      <a href = "{{url_for('add_favorite', user_name = user_name, title = items['artist'] ,hash_link = items['hash_link'])}}">
+        Add {{items["artist"]}} to favorites
+      </a>
         <p>Artist: {{items["artist"]}}</p>
         <br>
         <img src = {{ items["img_link"] }} />
