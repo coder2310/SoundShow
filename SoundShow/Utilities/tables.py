@@ -41,7 +41,7 @@ NUM_INTERESTED_VIEW = "CREATE VIEW Num_Interested AS \
 
 USER_FAVORITES = "CREATE TABLE IF NOT EXISTS user_favorites( \
                 user_name VARCHAR(20) NOT NULL, \
-                title VARCHAR(200) NOT NULL, \
+                title VARCHAR(300) NOT NULL, \
                 hashed_link VARCHAR(256) NOT NULL, \
                 PRIMARY KEY (user_name, hashed_link),\
                 FOREIGN KEY(user_name) REFERENCES user(user_name) \
