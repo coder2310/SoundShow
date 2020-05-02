@@ -8,10 +8,16 @@ import pymysql.cursors
 from Engine.ThreadAPIs import ThreadEngine
 from flask import (Flask, redirect, render_template, request, send_file,
                    session, url_for)
+# from sassutils.wsgi import SassMiddleware
+
 
 
 from Utilities import querys, tables, utilities, variables
 sound_show = Flask(__name__)
+
+# sound_show.wsgi_app = SassMiddleware(sound_show.wsgi_app, {
+#     'SoundShow': ('static/sass', 'static/css', '/static/css')
+# })
 sound_show.secret_key = "super secret key"
 sound_show_conn = pymysql.connect(**variables.DB_CONN)
 
@@ -172,22 +178,23 @@ def jsonify_curr_user():
     for rows in search_history:
         rows["searched_at"] = str(rows["searched_at"])
         result["search_history"].append(rows)
-    result["favorites"] = execute_query(querys.GET_USER_FAVORITES, "all", (session["username"]))
+    result["favorites"] = execute_query(
+        querys.GET_USER_FAVORITES, "all", (session["username"]))
     return result
 
 
 @login_required
 @sound_show.route("/delete_favorite/<user_name>/<hash_link>")
-def delete_favorite(user_name,hash_link):
+def delete_favorite(user_name, hash_link):
     execute_query(querys.DELETE_USER_FAVORTE, None, (user_name, hash_link))
     return redirect(url_for("profile", curr_uuid=session["uuid"]))
+
 
 @login_required
 @sound_show.route("/delete_all_favorites/<user_name>")
 def delete_all_favorites(user_name):
     execute_query(querys.DELETE_ALL_FAVORITES, None, (user_name))
     return redirect(url_for("profile", curr_uuid=session["uuid"]))
-
 
 
 @sound_show.route("/")
@@ -311,9 +318,10 @@ def store_google_results(google_data):
     for entry in google_data:
         try:
             execute_query(querys.ADD_LINK, None,
-                        (entry["url"], entry["hash_link"]))
+                          (entry["url"], entry["hash_link"]))
         except:
             pass
+
 
 @login_required
 def store_youtube_results(youtube_data):
@@ -321,7 +329,7 @@ def store_youtube_results(youtube_data):
         try:
             if entry["link"] != None:
                 execute_query(querys.ADD_LINK, None,
-                            (entry["link"], entry["hash_link"]))
+                              (entry["link"], entry["hash_link"]))
         except:
             pass
 
@@ -331,7 +339,7 @@ def store_spotify_results(spotify_data):
     for entry in spotify_data:
         try:
             execute_query(querys.ADD_LINK, None,
-                        (entry["link"], entry["hash_link"]))
+                          (entry["link"], entry["hash_link"]))
         except:
             pass
 
@@ -369,7 +377,7 @@ def populate_home_page():
             return result
     # we repeat the same steps if the user has selected initial interests
     session["categories"] = get_users_categories()
-    print("Session:", session["categories"], file=open("dump.txt", "a+"))
+    # print("Session:", session["categories"], file=open("dump.txt", "a+"))
     for obj in users_interests:
         interests.extend(obj.values())
     # if they did select interests we add pass that along to the
@@ -415,7 +423,8 @@ def pre_loaded_google_data():
 @login_required
 @sound_show.route("/add_favorite/<user_name>/<title>/<hash_link>")
 def add_favorite(user_name, title, hash_link):
-    execute_query(querys.ADD_USER_FAVORITE, None, (user_name, title, hash_link))
+    execute_query(querys.ADD_USER_FAVORITE, None,
+                  (user_name, title, hash_link))
     return redirect(url_for("user_home", curr_uuid=session["uuid"]))
 
 
@@ -539,4 +548,4 @@ if __name__ == "__main__":
     #     pass
     # execute_query(tables.USER_SEARCH_HISTORY)
 
-    run_sound_show()
+    run_sound_show(reset_media= True)
