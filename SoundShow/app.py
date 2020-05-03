@@ -169,7 +169,6 @@ def jsonify_curr_user():
     
     user_query = execute_query(
         querys.GET_INFO_USING_USERNAME, "one", (session["username"]))
-    print(user_query, result, file = open("json.txt", "w+"))
     result["name"] = user_query["first_name"] + " " + user_query["last_name"]
     result["joined"] = str(user_query["joined"])
     user_interests = execute_query(
