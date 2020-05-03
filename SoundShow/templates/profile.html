@@ -3,57 +3,139 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="{{url_for('static',filename = 'css/profile.css')}}" />
     <title>{{data["name"]}}'s Profile</title>
   </head>
-  <!-- <link  rel="stylesheet" type=" text/css" href="{{url_for('static',filename = 'css/profile.css')}}" > -->
+
+  <body>
+        <div class="imgcontainer">
+     <img
+          src="{{url_for('static',filename = 'img/logo.png')}}"
+          alt="logo"
+          class="avatar"
+      />
+      <br />
+    </div>
+
+  <div class="dropdown">
+  <button class="dropbtn">
+
+
+    <img 
+
+      src="{{url_for('static',filename = 'img/hamb.png')}}"
+          alt="logo"
+          class="hamb"
+    />
+
+
+
+  </button>
+
+  <div class="dropdown-content"><font color="white">
+ <a href = "{{url_for('profile',curr_uuid = curr_uuid)}}">Name: {{data["name"]}}</a>
+ <a href = "{{url_for('profile',curr_uuid = curr_uuid)}}">username: {{data["username"]}}</a>
+ <a href = "{{url_for('profile',curr_uuid = curr_uuid)}}">UUID: {{data["userID"]}}</a>
+ <a href = "{{url_for('profile',curr_uuid = curr_uuid)}}">Joined: {{data["joined"]}}</a>
+ <a href="{{url_for('logout')}}"> Logout </a>
+</font>
+  </div>
+</div>
+<div>
+<br>
+  </div>
+  <div>
+    <br>
+  </div>
+  <div>
+<br>
+  </div>
+  <div>
+    <br>
+  </div>
+  <div>
+<br>
+  </div>
+  <div>
+    <br>
+  </div>
+  <div>
+<br>
+  </div>
+  <div>
+    <br>
+  </div>
+<!-- 
+
 
   <form action = "/custom_search" method = "post">
-    <input type="text" name = "search_term" placeholder="Search">
+ 
+    <input type="text" name = "search_term" placeholder="Search...">
+  
     <button type ="submit">Search</button>
-  </form>
-  <a href="{{url_for('logout')}}"> Logout </a>
-  <body>
+  
 
-    <p>Name: {{data["name"]}}</p>
-    <br />
-    <p>username: {{data["username"]}}</p>
-    <br />
-    <p>UUID: {{data["userID"]}}</p>
-    <br />
-    <p>Joined: {{data["joined"]}}</p>
-    <br />
-    <p>Interests</p>
+  </form> -->
+
+<div id="cover">
+  <form method="post" action="/custom_search">
+    <div class="tb">
+      <div class="td"><input type="text" placeholder="Search" name = "search_term" ></div>
+      <div class="td" id="s-cover">
+        <button type="submit">
+          <div id="s-circle"></div>
+          <span></span>
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
+
+
+    <p><font color:#81b3d2 size="5.5">Interests:</p>
     {% if data["interests"] %}
     {% for inter in data["interests"] %}
-      <p>{{inter}}</p><a href = "{{url_for('delete_interest', user_name = data['username'], interest_name = inter)}}">Delete Interest</a> <br>
+      <p>{{inter}}</p><a href = "{{url_for('delete_interest', user_name = data['username'], interest_name = inter)}}">Delete {{inter}} from interests?</a> <br>
     {% endfor %}
     {% endif %} {% if not data["interests"] %}
     <p> No interests selected</p>
     {% endif %}
     <br />
     {% if data["favorites"] %}
-      <p>Your favorites</p>
+
+      <p>Your favorites:</p>
+
       {% for fav in data["favorites"] %}
-      <a href ={{fav["link"]}} target = "_blank"> {{fav["title"]}}</a> <a href = "{{url_for('delete_favorite', user_name = data['username'], hash_link = fav['hashed_link'])}}">Delete {{fav["title"]}}</a>
+      <a   href ={{fav[link]}} target = "_blank"> {{fav["title"]}}</a> 
+      <br>
+      <a href = "{{url_for('delete_favorite', user_name = data['username'], hash_link = fav['hashed_link'])}}"><font color:#81b3d2 size="5.5">Delete {{fav["title"]}} from favoirtes ?</a>
+      </br>
+
+
       <br>
       {% endfor %}
-      <a href = "{{url_for('delete_all_favorites', user_name = data['username'])}}">Delete all Favorites</a>
+      <a href = "{{url_for('delete_all_favorites', user_name = data['username'])}}"><font color:#81b3d2 size="5.5">Delete all Favorites</a>
     {% endif %}
     {% if not data["favorites"] %}
-      <p>No favorites selected</p>
+      <p><font color:#81b3d2 size="5.5">No favorites selected</p>
     {% endif %}
     <br>
     {% if data["search_history"] == [] %}
-      <p>Search History: No search history</p>
+      <p><font color:#81b3d2 size="5.5">Search History: No search history</p>
     {% endif %}
     {% if data["search_history"] != [] %}
     {% for entry in data["search_history"] %}
-        <p>{{entry["search_term"]}} search at {{entry["searched_at"]}}</p><br>
+        <p><font color:#81b3d2 size="5.5">{{entry["search_term"]}} search at {{entry["searched_at"]}}</p><br>
     {% endfor %}
     {% endif %}
-    <a href="{{url_for('clear_history')}}">Clear History</a>
+
+
+    <div class="ending">
+
+    <a  style="text-decoration:none" href="{{url_for('clear_history')}}">Clear History</a>
     <br>
-    <a href = "{{url_for('edit_interests', user_name = data['username'])}}">Add interests</a><br>
-    <a href="{{url_for('user_home',curr_uuid = curr_uuid)}}">Go back home</a>
+    <a   style="text-decoration:none" href = "{{url_for('edit_interests', user_name = data['username'])}}">Add interests</a><br>
+    <a style="text-decoration:none"  href="{{url_for('user_home',curr_uuid = curr_uuid)}}">Go back home</a>
+  </div>
   </body>
 </html>

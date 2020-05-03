@@ -1,23 +1,79 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link  rel="stylesheet" type=" text/css" href="{{url_for('static',filename = 'css/edit_interests.css')}}" >
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <link
+      rel="stylesheet"
+      type=" text/css"
+      href="{{url_for('static',filename = 'css/edit_interests.css')}}"
+    />
     <title>Document</title>
+
 </head>
 <body>
+	    <div class="imgcontainer">
+     <img
+          src="{{url_for('static',filename = 'img/logo.png')}}"
+          alt="logo"
+          class="avatar"
+      />
+      <br />
+    </div>
+
+
+
 {% for cat in selections %}
-    {{cat}}<br>
+<div>
+<br>
+  </div>
+  <div>
+    <br>
+  </div>
+ <div class="header">
+  <font color="white" size="+3">  {{cat}}<br></font>
+  <div>
+<br>
+  </div>
+  <div>
+    <br>
+  </div>
+
+
     {% for cont in selections[cat] %}
-        {{cont}} <a href = "{{url_for('add_interest', user_name = user_name, interest_name = cont)}}">Add interest</a>
-        <br>
+<span class="square">
+        <font color="white" size="+2"> <a class="tenth before after" style="text-decoration:none" href = "{{url_for('add_interest', user_name = user_name, interest_name = cont)}}"> {{cont}} &nbsp  </a></font>
+
+      </span>
     {% endfor%}
     <br>
 {% endfor %}
+
+</div>
+  <div>
+<br>
+  </div>
+  <div>
+    <br>
+  </div>
+  
+  <div>
+<br>
+  </div>
+  <div>
+    <br>
+  </div>
+
+<div class="ending">
+
+        <font size="+1">
 <a href="{{url_for('user_home',curr_uuid = curr_uuid)}}">Go back home</a><br>
 <a href = "{{url_for('profile',curr_uuid = curr_uuid)}}">Go to Profile</a><br>
+
+
 <a href="{{url_for('logout')}}"> Logout </a>
+</font>
+</div>
+
 </body>
 </html>

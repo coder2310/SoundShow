@@ -34,7 +34,7 @@ USER_SEARCH_HISTORY = "CREATE TABLE IF NOT EXISTS user_search_history(\
                         FOREIGN KEY(user_name) REFERENCES user(user_name) \
                         ON DELETE CASCADE);"
 
-NUM_INTERESTED_VIEW = "CREATE VIEW Num_Interested AS \
+NUM_INTERESTED_VIEW = "CREATE OR REPLACE VIEW Num_Interested AS \
                         SELECT category_name, SUM(num_interested) AS amount \
                         FROM content GROUP BY(category_name) ORDER BY amount DESC;"
 

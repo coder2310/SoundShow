@@ -3,47 +3,149 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- <link  rel="stylesheet" type=" text/css" href="{{url_for('static',filename = 'css/search_results.css')}}" > -->
-
+     <link rel="stylesheet" type="text/css" href="{{url_for('static',filename = 'css/search_result.css')}}" />
     <title>Welcome back {{user_name}}</title>
   </head>
   <body>
-    <a href = "{{url_for('logout')}}"> Logout </a><br>
-    <a href = "{{url_for('profile',curr_uuid = curr_uuid)}}">Go to Profile</a><br>
-    <form action = "/custom_search" method = "post">
-      <input type="text" name = "search_term" placeholder="Search">
-      <button type ="submit">Search</button>
+
+      <div class="dropdown">
+  <button class="dropbtn">
+
+
+    <img 
+
+      src="{{url_for('static',filename = 'img/hamb.png')}}"
+          alt="logo"
+          class="hamb"
+    />
+
+
+
+  </button>
+
+  <div class="dropdown-content"><font color="white">
+
+<a href = "{{url_for('profile',curr_uuid = curr_uuid)}}">Go to Profile</a>
+ <a href="{{url_for('logout')}}"> Logout </a>
+</font>
+  </div>
+</div>
+    <!-- <form action = "/custom_search" method = "post"> -->
+      <!-- <input type="text" name = "search_term" placeholder="Search"> -->
+      <!-- <button type ="submit">Search</button> -->
     </form>
-    <h1>Google Search Results {{search_term}}</h1>
+
+   <div id="cover">
+  <form method="post" action="/custom_search">
+    <div class="tb">
+      <div class="td"><input type="text" placeholder="Search" name = "search_term" ></div>
+      <div class="td" id="s-cover">
+        <button type="submit">
+          <div id="s-circle"></div>
+          <span></span>
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
+
+
+
+        <div class="imgcontainer">
+          &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp 
+     <img 
+          src="{{url_for('static',filename = 'img/logo.png')}}"
+          alt="logo"
+          class="avatar"
+      />
+    
+    </div>
+
+
+
+    <div class="contain">
+    <h1>  <font color="white"> &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp Google Search Results
+    </font></h1>
     {%set google = data["google_search"]%} 
     {% for items in google %}
-    <b>
-      <p>Source: {{items["source"]}}</p>
-    </b>
-    <br />
-    <b>
-      <p>Title: {{items["title"]}}</p>
-    </b>
+    <br>   
+    <a style="text-decoration:none" href={{ items["url"] }} target="_blank" class="item">    <br>
+     <p><font color="white" size="+2">Title: {{items["title"]}}</font></p>
+    </a>
     <p>Description:{{items["description"]}}</p>
-    <a href={{ items["url"] }} target="_blank">Link</a>
-    <br>
-    <img src= {{ items["img_url"] }} />
-    <br>
+     <p>Source: {{items["source"]}}</p> 
+    <a href = "{{url_for('add_favorite', user_name = user_name, title = items['title'] ,hash_link = items['hash_link'])}}">
+      Add {{items["title"]}} to favorites?
+    </a>
+<br>
+<br>
+
     {%endfor%}
-    <h2>Youtube Search Results</h2>
+</div>
+<br>
+<br>
+    <div class="contain">
+    <h1>  <font color="white">&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp Youtube Search Results</font> </h1>
     {% set youtube = data["youtube_search"]%}
       {% for items in youtube %}
-        <p>Title: {{items["title"]}}</p>
+    <br>   
+    <a style="text-decoration:none" href={{ items["link"] }} target="_blank" class="item">    <br>
+     <p><font color="white" size="+2">Title: {{items["title"]}}</font></p>
+    </a>
+    <p>Description:{{items["description"]}}</p>
+     <p>Source: {{items["source"]}}</p> 
+      <a href = "{{url_for('add_favorite', user_name = user_name, title = items['title'], hash_link = items['hash_link'])}}">
+        Add {{items["title"]}} to favorites?
+      </a>
+           <p>Channel: {{items["channel"]}}</p>
+
+
+
+    {%endfor%}
+</div>
+
+
+
+
+<br>
+<br>  
+
+   
+ <div class="contain">
+
+        <h1>  <font color="white">&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp Spotify Search Results</font> </h1>
+    {% set spotify = data["spotify_search"] %}
+      {% for items in spotify %}
+ <br>
         <br>
-        <p>Description:{{items["description"]}}</p>
+        <p><font color="white" size="+2">Artist: {{items["artist"]}}</font></p>
+        <a style="text-decoration:none" href = {{ items["link"] }} target ="_blank">Go to Artist</a>
+        <p>Albums:</p>
+        {% for album in items["albums"] %}
+          <p>Name: {{ album["name"] }}</p>
+          <p>Release Date: {{album["release date"] }}</p>
+       
+          <a href = {{ album ["url"] }} target = "_blank">Go to album?</a>
+         
+        {% endfor %}
+
+        {% for tracks in items["top_tracks"] %}
         <br>
-        <a href={{ items["url"] }}>Link</a>
-        <img src = {{ items["image"] }}>
         <br>
-        <p>Channel: {{items["channel"]}}</p>
-        <br>
-        <a href = {{ items["channel_link"] }} target="_blank">Channel Link</a>
+          <p>Track: {{tracks["track"] }}</p>
+          <audio controls>
+            <source src = {{ tracks["audio"] }}>
+          </audio>
+          <br>
+                <a style="text-decoration:none" href = "{{url_for('add_favorite', user_name = user_name, title = items['artist'] ,hash_link = items['hash_link'])}}">
+        Add {{items["artist"]}} to favorites?
+      </a>
+         
+
+        {% endfor %}
       {% endfor %}
-    <a href = "{{url_for('user_home',curr_uuid = curr_uuid)}}">Go back home</a>
+
+</div>
+
   </body>
 </html>

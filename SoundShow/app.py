@@ -64,14 +64,16 @@ def retrieve_top_categories(rows=10):
 def run_sound_show(clear_users=False, reset_media=False, rebuild_tables=False):
     if clear_users:
         # since its a forign key constrain
+        execute_query("DELETE FROM user_favorites")
+        execute_query("DELETE FROM user_search_history")
         execute_query("DELETE FROM user_interests;")
         execute_query("DELETE FROM user;")
         execute_query(querys.RESET_CONTENT_COUNT)
     if rebuild_tables:
         # this would empty our data base so no need to run the other statements
         recreate_tables()
-        reinsert_media()
         sound_show.run(debug=True, threaded=True, host='0.0.0.0')
+
         return
 
     if reset_media:
@@ -80,25 +82,27 @@ def run_sound_show(clear_users=False, reset_media=False, rebuild_tables=False):
 
 
 def recreate_tables():
+    stmt = "Deleting {}"
     try:
-        execute_query(querys.DROP_TABLE.format("user"))
-        execute_query(querys.DROP_TABLE.format("category"))
-        execute_query(querys.DROP_TABLE.format("content"))
-        execute_query(querys.DROP_TABLE.format("user_interests"))
         execute_query(querys.DROP_TABLE.format("user_favorites"))
-        execute_query(querys.DROP_TABLE.format("user_search_history"))
-        execute_query(querys.DROP_VIEW.format("Num_Interested"))
         execute_query(querys.DROP_TABLE.format("favorites"))
+        execute_query(querys.DROP_TABLE.format("user_search_history"))
         execute_query(querys.DROP_TABLE.format("user_favorites"))
+        execute_query(querys.DROP_TABLE.format("user_interests"))
+        execute_query(querys.DROP_TABLE.format("content"))
+        execute_query(querys.DROP_TABLE.format("category"))
+        execute_query(querys.DROP_TABLE.format("user"))
+        execute_query(querys.DROP_VIEW.format("Num_Interested"))
+        
         execute_query(tables.USER)
         execute_query(tables.CATEGORY)
         execute_query(tables.CONTENT)
         execute_query(tables.USER_INTERESTS)
         execute_query(tables.USER_SEARCH_HISTORY)
         execute_query(tables.NUM_INTERESTED_VIEW)
-        execute_query(tables.USER_FAVORITES)
         execute_query(tables.FAVORITES)
-
+        execute_query(tables.USER_FAVORITES)
+        reinsert_media()
     except:
         pass
 
@@ -162,10 +166,10 @@ def jsonify_curr_user():
     # name_query = execute_query(querys.GET_FULL_NAME, "one", (session["username"]))
     # full_name = name_query["first_name"] + " " + name_query["last_name"]
     # joined_query =
-
+    
     user_query = execute_query(
         querys.GET_INFO_USING_USERNAME, "one", (session["username"]))
-
+    print(user_query, result, file = open("json.txt", "w+"))
     result["name"] = user_query["first_name"] + " " + user_query["last_name"]
     result["joined"] = str(user_query["joined"])
     user_interests = execute_query(
@@ -423,9 +427,14 @@ def pre_loaded_google_data():
 @login_required
 @sound_show.route("/add_favorite/<user_name>/<title>/<hash_link>")
 def add_favorite(user_name, title, hash_link):
-    execute_query(querys.ADD_USER_FAVORITE, None,
-                  (user_name, title, hash_link))
+    try:
+        execute_query(querys.ADD_USER_FAVORITE, None,
+                    (user_name, title, hash_link))
+        return redirect(url_for("user_home", curr_uuid=session["uuid"]))
+    except:
+        return redirect(url_for("user_home", curr_uuid=session["uuid"]))
     return redirect(url_for("user_home", curr_uuid=session["uuid"]))
+
 
 
 @login_required
@@ -537,15 +546,4 @@ def profile(curr_uuid):
 
 
 if __name__ == "__main__":
-    # will try to come with a query that removes the table if it already
-    # exists. Insertign all information from it, into the new table
-    # this is just so that if we make changes to the colomuns or constraints
-    # run_sound_show()
-    # try:
-    #     execute_query(querys.RESET_CONTENT_COUNT)
-    #     execute_query(tables.USER_INTERESTS)
-    # except:
-    #     pass
-    # execute_query(tables.USER_SEARCH_HISTORY)
-
-    run_sound_show(reset_media= True)
+    run_sound_show()
